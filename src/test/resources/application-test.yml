@@ -1,0 +1,18 @@
+#Monodb Configuration
+spring:
+  data:
+    mongodb:
+      database: wms
+      #username:
+      #password:
+      host: localhost
+      port: 0
+  main:
+    banner-mode: "off"
+
+logging:
+  level:
+    com.silaev.wms: DEBUG
+
+storage:
+  bulk-upload-path: uploads/files-test

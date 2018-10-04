@@ -1,0 +1,16 @@
+#Monodb Configuration
+spring:
+  data:
+    mongodb:
+      database: wms
+      #username:
+      #password:
+      host: localhost
+      port: 27017
+
+logging:
+  level:
+    com.silaev.wms: DEBUG
+
+storage:
+  bulk-upload-path: uploads/files
