@@ -7,6 +7,10 @@ spring:
       #password:
       host: localhost
       port: 0
+  mongodb:
+    embedded:
+      version: 3.2.2
+      features: ONLY_WITH_SSL, ONLY_WINDOWS_2008_SERVER
   main:
     banner-mode: "off"
 

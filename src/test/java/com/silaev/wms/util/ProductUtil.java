@@ -9,8 +9,11 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.util.MultiValueMap;
+
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.URLEncoder;
 
 public class ProductUtil {
     public static ProductDto mockProductDto(Long article,
@@ -50,5 +53,14 @@ public class ProductUtil {
         Resource file = new ClassPathResource("products.xlsx");
         builder.part("file", file).header("file", "file");
         return builder.build();
+    }
+
+    public static String encodeQueryParam(String param) {
+        try {
+            return URLEncoder.encode(param, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        throw new RuntimeException(String.format("Cannot encodeQueryParam %s", param));
     }
 }

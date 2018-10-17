@@ -86,7 +86,7 @@ public class ProductControllerTest {
                 .get()
                 .uri(uriBuilder -> uriBuilder.path(BASE_URL + "/all")
                         .queryParam("name", "AAA")
-                        .queryParam("brand", Brand.ENGLISH_LAUNDRY.getBrandName())
+                        .queryParam("brand", ProductUtil.encodeQueryParam(Brand.ENGLISH_LAUNDRY.getBrandName()))
                         .build())
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange();
@@ -146,7 +146,7 @@ public class ProductControllerTest {
     }
 
     /**
-     * products.xlsx content:
+     * products.xlsx's content:
      * article	name	        quantity	size    initialQuantity     expextedQuantity
      * ---------------------------------------------------------------------------------
      * 120589	Eau de Parfum	7	        50      9                   7+9=16

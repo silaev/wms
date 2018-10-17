@@ -4,7 +4,6 @@ import com.silaev.wms.converter.ProductDtoToProductConverter;
 import com.silaev.wms.dao.ProductDao;
 import com.silaev.wms.dto.ProductDto;
 import com.silaev.wms.entity.Product;
-import com.silaev.wms.entity.Size;
 import com.silaev.wms.exception.UploadProductException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -94,14 +93,6 @@ public class UploadProductService {
         return Mono.just(
                 Paths.get(pathToStorage + "/" + userName, fileName))
                 .log(String.format("A file: %s has been uploaded", fileName))
-                .map(destFile -> {
-                    try {
-                        return Files.createFile(destFile).toFile();
-                    } catch (IOException e) {
-                        throw new UploadProductException(String.format("Cannot create a file: %s", fileName), e);
-                    }
-                })
-                .log(String.format("A file: %s has been created", fileName))
                 .flatMap(file::transferTo)
                 .then(processExcelFile(fileName, userName))
                 .log(String.format("A file: %s has been saved", fileName));

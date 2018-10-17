@@ -1,9 +1,11 @@
 buildscript {
 	ext {
-		springBootVersion = '2.0.5.RELEASE'
+		springBootVersion = '2.1.0.M4'
 	}
 	repositories {
 		mavenCentral()
+		maven { url "https://repo.spring.io/snapshot" }
+		maven { url "https://repo.spring.io/milestone" }
 	}
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
@@ -12,6 +14,7 @@ buildscript {
 
 plugins {
 	id "io.franzbecker.gradle-lombok" version "1.14"
+	id 'com.sourcemuse.mongo' version '1.0.6'
 }
 
 apply plugin: 'java'
@@ -20,15 +23,21 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
 group = 'com.silaev.wms'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.2-SNAPSHOT'
 sourceCompatibility = 1.8
 
 repositories {
 	mavenCentral()
+	maven { url "https://repo.spring.io/snapshot" }
+	maven { url "https://repo.spring.io/milestone" }
 }
 
 springBoot {
 	mainClassName = 'com.silaev.wms.WmsApplication'
+}
+
+task integrationTest(type: Test) {
+	runWithMongoDb = true
 }
 
 dependencies {
@@ -38,16 +47,25 @@ dependencies {
 	implementation('org.springframework.boot:spring-boot-starter-security')
 	implementation('org.bouncycastle:bcprov-jdk15on:1.60')
 	implementation('org.apache.poi:poi-ooxml:4.0.0')
+	implementation('commons-io:commons-io:2.6')
+
 	//embed.mongo should be test scope dependency, but we use it here for development.
-	//never use it in real prod.
-	implementation('de.flapdoodle.embed:de.flapdoodle.embed.mongo') 
+	//Never use it in a real prod.
+	implementation('de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.1.1')
 
 	testImplementation('org.springframework.boot:spring-boot-starter-test')
     testImplementation('io.projectreactor:reactor-test')
     testImplementation('org.springframework.security:spring-security-test')
 }
 test {
-	maxParallelForks = 3
+	maxParallelForks = 1
 	testLogging.showStandardStreams = true
 	testLogging.exceptionFormat = 'full'
+}
+
+//compileJava.dependsOn startManagedMongoDb
+
+mongo {
+	logging 'console'
+	mongoVersion '3.2.2'
 }

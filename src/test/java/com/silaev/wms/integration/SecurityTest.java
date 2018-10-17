@@ -2,7 +2,6 @@ package com.silaev.wms.integration;
 
 import com.silaev.wms.annotation.version.ApiV1;
 import com.silaev.wms.dto.ProductDto;
-import com.silaev.wms.entity.Product;
 import com.silaev.wms.security.SecurityConfig;
 import com.silaev.wms.util.ProductUtil;
 import lombok.extern.slf4j.Slf4j;
