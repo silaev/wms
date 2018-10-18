@@ -110,6 +110,7 @@ public class ProductController {
      * @param files Flux<FilePart>
      * @return Mono<String> - textual status
      */
+    @ResponseStatus(HttpStatus.ACCEPTED)
     @PatchMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Mono<String> patchProductQuantity(@RequestPart("file") Flux<FilePart> files,
                                              @AuthenticationPrincipal Principal principal) {

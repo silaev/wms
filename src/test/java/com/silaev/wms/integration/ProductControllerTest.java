@@ -175,7 +175,7 @@ public class ProductControllerTest {
         //THEN
         exchange
                 .expectStatus()
-                .isOk();
+                .isAccepted();
 
         Flux<Product> all = productDao.findAll().sort(Comparator.comparing(Product::getQuantity));
         StepVerifier.create(all)
