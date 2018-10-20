@@ -1,6 +1,5 @@
 package com.silaev.wms.annotation.version;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
