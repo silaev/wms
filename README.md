@@ -5,7 +5,7 @@ The application lets:
 - create new products with article verification 
     (duplicate key error collection: wms.product index: article occurs while 
     trying to insert products with identical id);
-- find products dto(user's representation) by either name or brand (full equality, mau be soften in ProductDao
+- find products dto(user's representation) by either name or brand (full equality, may be soften in ProductDao
     via clear DSL);
 - find all products (entity representation);
 - upload xlsx file (other formats are not currently supported) in order to update current product quantities.
@@ -13,7 +13,7 @@ The application lets:
     be patched but not present in MongoDB, are properly logged. 
     After uploading, files are kept in a storage.bulk-upload-path/userName folder
     until he next call is performed. 
-- download product in xlsx format not currently supported.     
+- download product in xlsx format is not currently supported.     
           
 ####Requirements to consider before using the app 
 1. The project ought to be built by means of Gradle. For that reason, run `gradlew clean build`.
