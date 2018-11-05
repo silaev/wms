@@ -1,6 +1,6 @@
 buildscript {
 	ext {
-		springBootVersion = '2.1.0.M4'
+		springBootVersion = '2.1.1.BUILD-SNAPSHOT'
 	}
 	repositories {
 		mavenCentral()
@@ -48,6 +48,8 @@ dependencies {
 	implementation('org.bouncycastle:bcprov-jdk15on:1.60')
 	implementation('org.apache.poi:poi-ooxml:4.0.0')
 	implementation('commons-io:commons-io:2.6')
+
+	runtimeOnly('org.springframework.boot:spring-boot-devtools')
 
 	//embed.mongo should be test scope dependency, but we use it here for development.
 	//Never use it in a real prod.
