@@ -1,6 +1,6 @@
-#HTTP API for small WMS (warehouse management system) based on Spring boot 2 Reactive WebFlux and Embedded MongoDB
+# HTTP API for small WMS (warehouse management system) based on Spring boot 2 Reactive WebFlux and Embedded MongoDB
 
-####General info
+#### General info
 The application lets:
 - create new products with article verification 
     (duplicate key error collection: wms.product index: article occurs while 
@@ -15,7 +15,7 @@ The application lets:
     until he next call is performed. 
 - download product in xlsx format is not currently supported.     
           
-####Requirements to consider before using the app 
+#### Requirements to consider before using the app 
 1. The project ought to be built by means of Gradle. For that reason, run `gradlew clean build`.
 Subsequently, to start the application make use of `gradlew bootRun`
 2. All the examples of possible requests might be found in  
@@ -24,7 +24,7 @@ These classes use a bunch of predefined files located in `test\resources`.
 3. The app provides BasicAuth with predefined 2 users admin and user,
 see more in SecurityConfig.java.   
 
-####Future improvements
+#### Future improvements
 1. Recon the use of Spring Security Oath2.
 2. Draw attention to the limitation of user space on the server. Frankly speaking,
 server space is a limited resource.
@@ -38,10 +38,3 @@ Remember, Man in the middle attacks are real.
 avoid inconsistent state.
 5. Optimistic Locking requires to set the WriteConcern to ACKNOWLEDGED.
 Otherwise OptimisticLockingFailureException can be silently swallowed.
-
-#####Environment
-Have a good look at Docker and put this app into a container. This approach
-enjoys considerable use in modern development with regard to
-product delivery process in Microservice Architecture.
-Today it's only a matter of additional gradle plugin.    
-        

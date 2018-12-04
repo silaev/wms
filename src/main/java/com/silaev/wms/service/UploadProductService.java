@@ -74,6 +74,7 @@ public class UploadProductService {
     }
 
     public Mono<Void> patchProductQuantity(Flux<FilePart> files, final String userName) {
+        //TODO: refactor so that to use Schedulers
         return Mono.fromRunnable(() -> init(userName))
                 .log(String.format("cleaning-up directory: %s", userName))
                 .then(files.flatMap(f -> saveFileToDiskAndUpdate(f, userName)).then());

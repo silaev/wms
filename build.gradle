@@ -1,20 +1,15 @@
 buildscript {
-	ext {
-		springBootVersion = '2.1.1.BUILD-SNAPSHOT'
-	}
-	repositories {
-		mavenCentral()
-		maven { url "https://repo.spring.io/snapshot" }
-		maven { url "https://repo.spring.io/milestone" }
-	}
-	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-	}
+    ext {
+        springBootVersion = '2.1.1.RELEASE'
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
 }
 
 plugins {
-	id "io.franzbecker.gradle-lombok" version "1.14"
-	id 'com.sourcemuse.mongo' version '1.0.6'
+    id "io.franzbecker.gradle-lombok" version "1.14"
+    id 'com.sourcemuse.mongo' version '1.0.6'
 }
 
 apply plugin: 'java'
@@ -23,51 +18,49 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
 group = 'com.silaev.wms'
-version = '0.0.2-SNAPSHOT'
+version = '0.0.3-SNAPSHOT'
 sourceCompatibility = 1.8
 
 repositories {
-	mavenCentral()
-	maven { url "https://repo.spring.io/snapshot" }
-	maven { url "https://repo.spring.io/milestone" }
+    mavenCentral()
 }
 
 springBoot {
-	mainClassName = 'com.silaev.wms.WmsApplication'
+    mainClassName = 'com.silaev.wms.WmsApplication'
 }
 
 task integrationTest(type: Test) {
-	runWithMongoDb = true
+    runWithMongoDb = true
 }
 
 dependencies {
-	implementation('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
-	implementation('org.springframework.boot:spring-boot-starter-validation')
-	implementation('org.springframework.boot:spring-boot-starter-webflux')
-	implementation('org.springframework.boot:spring-boot-starter-security')
-	implementation('org.bouncycastle:bcprov-jdk15on:1.60')
-	implementation('org.apache.poi:poi-ooxml:4.0.0')
-	implementation('commons-io:commons-io:2.6')
+    implementation('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
+    implementation('org.springframework.boot:spring-boot-starter-validation')
+    implementation('org.springframework.boot:spring-boot-starter-webflux')
+    implementation('org.springframework.boot:spring-boot-starter-security')
+    implementation('org.bouncycastle:bcprov-jdk15on:1.60')
+    implementation('org.apache.poi:poi-ooxml:4.0.0')
+    implementation('commons-io:commons-io:2.6')
 
-	runtimeOnly('org.springframework.boot:spring-boot-devtools')
+    runtimeOnly('org.springframework.boot:spring-boot-devtools')
 
-	//embed.mongo should be test scope dependency, but we use it here for development.
-	//Never use it in a real prod.
-	implementation('de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.1.1')
+    //embed.mongo should be test scope dependency, but we use it here for development.
+    //Never use it in a real prod.
+    implementation('de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.1.1')
 
-	testImplementation('org.springframework.boot:spring-boot-starter-test')
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
     testImplementation('io.projectreactor:reactor-test')
     testImplementation('org.springframework.security:spring-security-test')
 }
 test {
-	maxParallelForks = 1
-	testLogging.showStandardStreams = true
-	testLogging.exceptionFormat = 'full'
+    maxParallelForks = 1
+    testLogging.showStandardStreams = true
+    testLogging.exceptionFormat = 'full'
 }
 
 //compileJava.dependsOn startManagedMongoDb
 
 mongo {
-	logging 'console'
-	mongoVersion '3.2.2'
+    logging 'console'
+    mongoVersion '3.2.2'
 }

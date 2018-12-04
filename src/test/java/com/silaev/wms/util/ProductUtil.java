@@ -50,8 +50,10 @@ public class ProductUtil {
 
     public static MultiValueMap<String, HttpEntity<?>> getMultiPartFormData() {
         MultipartBodyBuilder builder = new MultipartBodyBuilder();
-        Resource file = new ClassPathResource("products.xlsx");
-        builder.part("file", file).header("file", "file");
+        Resource file1 = new ClassPathResource("products1.xlsx");
+        Resource file2 = new ClassPathResource("products2.xlsx");
+        builder.part("file", file1).header("file", "file");
+        builder.part("file", file2).header("file", "file");
         return builder.build();
     }
 

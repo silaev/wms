@@ -146,12 +146,14 @@ public class ProductControllerTest {
     }
 
     /**
-     * products.xlsx's content:
-     * article	name	        quantity	size    initialQuantity     expextedQuantity
-     * ---------------------------------------------------------------------------------
-     * 120589	Eau de Parfum	7	        50      9                   7+9=16
-     * 120590	Eau de Parfum	21	        100     6                   21+6=27
-     * 1647	    Eau de Parfum	79	        50                          NON cause article 1647 doesn't exist
+     * xlsx files' content:
+     * article	name	        quantity	        quantity            size    initialQuantity     expectedQuantity
+     *                          products1.xlsx      products2.xlsx
+     * -------------------------------------------------------------------------------------------------------------
+     * 120589	Eau de Parfum	7	                3                    50      9                   7+9+3=19
+     * 120590	Eau de Parfum	21	                5                    100     6                   21+6+5=32
+     * 1647	    Eau de Parfum	79	                -                    50      -                   NON*
+     *                                                                                              article 1647 doesn't exist
      */
 
     @WithMockUser(
@@ -163,6 +165,8 @@ public class ProductControllerTest {
     public void shouldPatchProductQuantity() {
         //GIVEN
         insertMockProductsIntoDb(Arrays.asList(product1, product2));
+        BigInteger expected1 = BigInteger.valueOf(19);
+        BigInteger expected2 = BigInteger.valueOf(32);
 
         //WHEN
         WebTestClient.ResponseSpec exchange = webClient
@@ -179,8 +183,12 @@ public class ProductControllerTest {
 
         Flux<Product> all = productDao.findAll().sort(Comparator.comparing(Product::getQuantity));
         StepVerifier.create(all)
-                .assertNext(x -> assertEquals(BigInteger.valueOf(16), x.getQuantity()))
-                .assertNext(x -> assertEquals(BigInteger.valueOf(27), x.getQuantity()))
+                .assertNext(x -> {
+                    assertEquals(expected1, x.getQuantity());
+                })
+                .assertNext(x -> {
+                    assertEquals(expected2, x.getQuantity());
+                })
                 .verifyComplete();
     }
 
@@ -207,7 +215,7 @@ public class ProductControllerTest {
     }
 
     /**
-     * Hepler method to insert mock products into MongoDB
+     * Helper method to insert mock products into MongoDB
      *
      * @param products
      */
