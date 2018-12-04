@@ -1,4 +1,4 @@
-# HTTP API for small WMS (warehouse management system) based on Spring boot 2 Reactive WebFlux and Embedded MongoDB
+# HTTP API for small WMS (warehouse management system) based on Spring boot 2 Reactive WebFlux and Embedded MongoDB [![Build Status](https://travis-ci.org/silaev/wms.svg?branch=master)](https://travis-ci.org/silaev/wms)
 
 #### General info
 The application lets:

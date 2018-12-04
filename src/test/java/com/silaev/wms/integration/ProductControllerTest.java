@@ -88,7 +88,7 @@ public class ProductControllerTest {
                         .queryParam("name", "AAA")
                         .queryParam("brand", ProductUtil.encodeQueryParam(Brand.ENGLISH_LAUNDRY.getBrandName()))
                         .build())
-                .accept(MediaType.APPLICATION_JSON)
+                .accept(MediaType.TEXT_EVENT_STREAM)
                 .exchange();
         //THEN
         exchange
@@ -109,7 +109,7 @@ public class ProductControllerTest {
         WebTestClient.ResponseSpec exchange = webClient
                 .get()
                 .uri(BASE_URL + "/admin/all")
-                .accept(MediaType.APPLICATION_JSON)
+                .accept(MediaType.TEXT_EVENT_STREAM)
                 .exchange();
         //THEN
         exchange
@@ -134,7 +134,7 @@ public class ProductControllerTest {
                 .uri(uriBuilder -> uriBuilder.path(BASE_URL + "/last")
                         //.queryParam("lastSize", "5") by default
                         .build())
-                .accept(MediaType.APPLICATION_JSON)
+                .accept(MediaType.TEXT_EVENT_STREAM)
                 .exchange();
         //THEN
         exchange

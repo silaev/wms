@@ -52,7 +52,7 @@ public class ProductController {
      * @param brand RequestParam
      * @return Flux<ProductDto>
      */
-    @GetMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/all", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ProductDto> findProductsByNameOrBrand(@RequestParam(value = "name", required = false) String name,
                                            @RequestParam(value = "brand", required = false) Brand brand) {
         log.debug("findProductsByNameOrBrand: {}, {}", name, brand);
@@ -69,7 +69,7 @@ public class ProductController {
      * for administrative needs.
      * @return Flux<Product>
      */
-    @GetMapping(value = "/admin/all", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/admin/all", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<Product> findAll() {
         return productService.findAll();
     }
@@ -79,7 +79,7 @@ public class ProductController {
      * @param lastSize - a number representing listSize. Default value is 5.
      * @return Flux<ProductDto>
      */
-    @GetMapping(value = "/last", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/last", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ProductDto> findLastProducts(
             @RequestParam(value = "lastSize", required = false, defaultValue = "5")
             @Min(value = 1) BigInteger lastSize) {
@@ -112,9 +112,10 @@ public class ProductController {
      */
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PatchMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Mono<String> patchProductQuantity(@RequestPart("file") Flux<FilePart> files,
-                                             @AuthenticationPrincipal Principal principal) {
+    public Mono<Void> patchProductQuantity(@RequestPart("file") Flux<FilePart> files,
+                                           @AuthenticationPrincipal Principal principal) {
         log.debug("shouldPatchProductQuantity");
-        return uploadProductService.patchProductQuantity(files, principal.getName()).then(Mono.just("submitted"));
+        return uploadProductService.patchProductQuantity(files, principal.getName())
+                .then();
     }
 }
