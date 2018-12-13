@@ -9,8 +9,11 @@ spring:
       port: 0
   mongodb:
     embedded:
-      version: 3.2.2
-      features: ONLY_WITH_SSL, ONLY_WINDOWS_2008_SERVER
+      #      storage:
+      #        replSetName: "r_0"
+      version: 4.0.4
+      features: ONLY_WITH_SSL, ONLY_WINDOWS_2008_SERVER, no_http_interface_arg
+
   main:
     banner-mode: "off"
 

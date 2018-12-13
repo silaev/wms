@@ -62,5 +62,5 @@ test {
 
 mongo {
     logging 'console'
-    mongoVersion '3.2.2'
+    mongoVersion '4.0.0'
 }

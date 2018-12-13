@@ -15,7 +15,7 @@ public interface ProductDao extends ReactiveMongoRepository<Product, String> {
 
     Flux<Product> findByArticleIn(List<Long> articles);
 
-    Flux<Product> findAll();
+    Flux<Product> findAllByOrderByQuantityAsc();
 
     Flux<Product> findAllByQuantityIsLessThanEqualOrderByQuantityAsc(BigInteger lastSize);
 }
