@@ -181,12 +181,14 @@ public class ProductControllerTest {
                 .expectStatus()
                 .isAccepted();
 
-        Flux<Product> all = productDao.findAll().sort(Comparator.comparing(Product::getQuantity));
+        Flux<Product> all = productDao.findAllByOrderByQuantityAsc();
         StepVerifier.create(all)
                 .assertNext(x -> {
+                    System.out.println("1" + x);
                     assertEquals(expected1, x.getQuantity());
                 })
                 .assertNext(x -> {
+                    System.out.println("2" + x);
                     assertEquals(expected2, x.getQuantity());
                 })
                 .verifyComplete();
@@ -221,7 +223,10 @@ public class ProductControllerTest {
      */
     private void insertMockProductsIntoDb(List<Product> products) {
         Flux<Product> productFlux = Flux.fromIterable(products);
-        Flux<Product> insert = productDao.insert(productFlux);
+        Flux<Product> insert = productDao.deleteAll()
+                .thenMany(productDao.insert(productFlux))
+                .sort(Comparator.comparingLong(Product::getArticle));
+
         StepVerifier.create(insert)
                 .expectNextSequence(products)
                 .verifyComplete();

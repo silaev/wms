@@ -77,7 +77,8 @@ public class UploadProductService {
         //TODO: refactor so that to use Schedulers
         return Mono.fromRunnable(() -> init(userName))
                 .log(String.format("cleaning-up directory: %s", userName))
-                .then(files.flatMap(f -> saveFileToDiskAndUpdate(f, userName)).then());
+                .then(files.flatMap(f -> saveFileToDiskAndUpdate(f, userName))
+                        .then());
     }
 
     /**
@@ -92,7 +93,7 @@ public class UploadProductService {
     private Mono<Void> saveFileToDiskAndUpdate(FilePart file, String userName) {
         String fileName = file.filename();
         return Mono.just(
-                Paths.get(pathToStorage + "/" + userName, fileName))
+                Paths.get(pathToStorage, userName, fileName))
                 .log(String.format("A file: %s has been uploaded", fileName))
                 .flatMap(file::transferTo)
                 .then(processExcelFile(fileName, userName))
