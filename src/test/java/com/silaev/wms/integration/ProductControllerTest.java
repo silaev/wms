@@ -29,6 +29,7 @@ import reactor.test.StepVerifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -223,7 +224,8 @@ public class ProductControllerTest {
     private void insertMockProductsIntoDb(List<Product> products) {
         Flux<Product> productFlux = Flux.fromIterable(products);
         Flux<Product> insert = productDao.deleteAll()
-                .thenMany(productDao.insert(productFlux));
+                .thenMany(productDao.insert(productFlux))
+                .sort(Comparator.comparingLong(Product::getArticle));
 
         StepVerifier.create(insert)
                 .expectNextSequence(products)

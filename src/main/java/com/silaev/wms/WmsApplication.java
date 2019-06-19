@@ -4,7 +4,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRepositories;
-import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.web.reactive.config.EnableWebFlux;
 
 @SpringBootApplication
@@ -12,8 +11,7 @@ import org.springframework.web.reactive.config.EnableWebFlux;
 @EnableReactiveMongoRepositories
 @EnableWebFlux
 public class WmsApplication {
-
-	public static void main(String[] args) {
-		SpringApplication.run(WmsApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(WmsApplication.class, args);
+    }
 }

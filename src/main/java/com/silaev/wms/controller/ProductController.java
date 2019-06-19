@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.blockhound.BlockHound;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -61,6 +62,8 @@ public class ProductController {
             throw new IllegalArgumentException("Neither name nor brand had been set as request param.");
         }
 
+        BlockHound.install();
+
         return productService.findProductsByNameOrBrand(name, brand);
     }
 
@@ -71,6 +74,10 @@ public class ProductController {
      */
     @GetMapping(value = "/admin/all", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<Product> findAll() {
+        log.debug("findAll");
+
+        BlockHound.install();
+
         return productService.findAll();
     }
 
@@ -84,6 +91,8 @@ public class ProductController {
             @RequestParam(value = "lastSize", required = false, defaultValue = "5")
             @Min(value = 1) BigInteger lastSize) {
         log.debug("findLastProducts: {}", lastSize);
+
+        BlockHound.install();
 
         return productService.findLastProducts(lastSize);
     }
@@ -102,6 +111,8 @@ public class ProductController {
                                         @AuthenticationPrincipal Principal principal) {
         log.debug("createProduct");
 
+        BlockHound.install();
+
         return productService.createProduct(productDto, principal.getName());
     }
 
@@ -115,6 +126,9 @@ public class ProductController {
     public Mono<Void> patchProductQuantity(@RequestPart("file") Flux<FilePart> files,
                                            @AuthenticationPrincipal Principal principal) {
         log.debug("shouldPatchProductQuantity");
+
+        BlockHound.install();
+
         return uploadProductService.patchProductQuantity(files, principal.getName())
                 .then();
     }

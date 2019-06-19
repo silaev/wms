@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '2.1.1.RELEASE'
+        springBootVersion = '2.1.6.RELEASE'
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
@@ -23,6 +23,7 @@ sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
+    maven { url 'https://repo.spring.io/milestone' }
 }
 
 springBoot {
@@ -46,12 +47,16 @@ dependencies {
 
     //embed.mongo should be test scope dependency, but we use it here for development.
     //Never use it in a real prod.
-    implementation('de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.1.1')
+    implementation('de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.2.0')
 
     testImplementation('org.springframework.boot:spring-boot-starter-test')
     testImplementation('io.projectreactor:reactor-test')
     testImplementation('org.springframework.security:spring-security-test')
+
+    compile group: 'io.projectreactor.tools', name: 'blockhound', version: '1.0.0.M4'
+    //compile 'io.projectreactor:reactor-tools:3.3.0.M2'
 }
+
 test {
     maxParallelForks = 1
     testLogging.showStandardStreams = true
@@ -62,5 +67,5 @@ test {
 
 mongo {
     logging 'console'
-    mongoVersion '4.0.0'
+    mongoVersion '4.0.4'
 }

@@ -17,6 +17,7 @@ spring:
 logging:
   level:
     com.silaev.wms: DEBUG
+    web: DEBUG
 
 storage:
   bulk-upload-path: uploads/files
