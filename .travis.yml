@@ -5,11 +5,10 @@ services: docker
 
 before_install:
 - chmod +x gradlew
-- sudo apt-get update
-- sudo apt-get install netcat
+- chmod +x wait-for-mongo.sh
 - docker network create mongo-cluster
 - docker run --name mongo -p 27017:27017 -d --net mongo-cluster mongo:4.0.10 --replSet rs0
-- until nc -vzw 2 127.0.0.1 27017; do sleep 2; done
+- sh wait-for-mongo.sh
 - docker exec -it mongo mongo --eval "printjson(rs.initiate())"
 
 script:
