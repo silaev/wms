@@ -8,8 +8,8 @@ buildscript {
 }
 
 plugins {
-    id "io.franzbecker.gradle-lombok" version "1.14"
-    id 'com.sourcemuse.mongo' version '1.0.6'
+    id "io.franzbecker.gradle-lombok" version "3.1.0"
+    id 'com.sourcemuse.mongo' version '1.0.7'
 }
 
 apply plugin: 'java'
@@ -18,8 +18,8 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
 group = 'com.silaev.wms'
-version = '0.0.3-SNAPSHOT'
-sourceCompatibility = 1.8
+version = '0.0.4-SNAPSHOT'
+sourceCompatibility = '11'
 
 repositories {
     mavenCentral()
@@ -45,27 +45,19 @@ dependencies {
 
     runtimeOnly('org.springframework.boot:spring-boot-devtools')
 
-    //embed.mongo should be test scope dependency, but we use it here for development.
-    //Never use it in a real prod.
-    implementation('de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.2.0')
-
     testImplementation('org.springframework.boot:spring-boot-starter-test')
     testImplementation('io.projectreactor:reactor-test')
     testImplementation('org.springframework.security:spring-security-test')
 
     compile group: 'io.projectreactor.tools', name: 'blockhound', version: '1.0.0.M4'
+
     //compile 'io.projectreactor:reactor-tools:3.3.0.M2'
+    //compile group: 'org.testcontainers', name: 'testcontainers', version: '1.11.3'
+    //compile group: 'com.vladmihalcea', name: 'db-testutil', version: '0.0.1'
 }
 
 test {
     maxParallelForks = 1
     testLogging.showStandardStreams = true
     testLogging.exceptionFormat = 'full'
-}
-
-//compileJava.dependsOn startManagedMongoDb
-
-mongo {
-    logging 'console'
-    mongoVersion '4.0.4'
 }

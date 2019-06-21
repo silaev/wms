@@ -1,18 +1,6 @@
-#Monodb Configuration
 spring:
-  data:
-    mongodb:
-      database: wms
-      #username:
-      #password:
-      host: localhost
-      port: 27017
-  mongodb:
-    embedded:
-      #storage:
-      #replSetName: "r_0"
-      version: 4.0.4
-      features: ONLY_WITH_SSL, ONLY_WINDOWS_2008_SERVER, no_http_interface_arg
+  profiles:
+    active: dev
 
 logging:
   level:

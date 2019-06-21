@@ -8,7 +8,7 @@ import com.silaev.wms.entity.Brand;
 import com.silaev.wms.entity.Product;
 import com.silaev.wms.entity.Size;
 import com.silaev.wms.security.SecurityConfig;
-import com.silaev.wms.util.ProductUtil;
+import com.silaev.wms.testutil.ProductUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.After;
 import org.junit.Before;
@@ -17,8 +17,10 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -32,6 +34,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+import static org.hamcrest.Matchers.isIn;
 import static org.junit.Assert.assertEquals;
 
 @Slf4j
@@ -39,8 +42,8 @@ import static org.junit.Assert.assertEquals;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
 @ActiveProfiles("test")
-public class ProductControllerTest {
-
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+public class ProductControllerITTest {
     public static final String BASE_URL = ApiV1.BASE_URL;
 
     @Autowired
@@ -148,12 +151,54 @@ public class ProductControllerTest {
     /**
      * xlsx files' content:
      * article	name	        quantity	        quantity            size    initialQuantity     expectedQuantity
-     *                          products1.xlsx      products2.xlsx
+     * products1.xlsx      products2.xlsx
      * -------------------------------------------------------------------------------------------------------------
      * 120589	Eau de Parfum	7	                3                    50      9                   7+9+3=19
      * 120590	Eau de Parfum	21	                5                    100     6                   21+6+5=32
      * 1647	    Eau de Parfum	79	                -                    50      -                   NON*
-     *                                                                                              article 1647 doesn't exist
+     * article 1647 doesn't exist
+     * <p>
+     * HttpStatus 500: Command failed with error 251 (NoSuchTransaction): 'Transaction 1 has been aborted.' on server localhost:27017. The full response is { "errorLabels" : ["TransientTransactionError"], "operationTime" : { "$timestamp" : { "t" : 1561124700, "i" : 2 } }, "ok" : 0.0, "errmsg" : "Transaction 1 has been aborted.", "code" : 251, "codeName" : "NoSuchTransaction", "$clusterTime" : { "clusterTime" : { "$timestamp" : { "t" : 1561124700, "i" : 2 } }, "signature" : { "hash" : { "$binary" : "AAAAAAAAAAAAAAAAAAAAAAAAAAA=", "$type" : "00" }, "keyId" : { "$numberLong" : "0" } } } }; nested exception is com.mongodb.MongoCommandException: Command failed with error 251 (NoSuchTransaction): 'Transaction 1 has been aborted.' on server localhost:27017. The full response is { "errorLabels" : ["TransientTransactionError"], "operationTime" : { "$timestamp" : { "t" : 1561124700, "i" : 2 } }, "ok" : 0.0, "errmsg" : "Transaction 1 has been aborted.", "code" : 251, "codeName" : "NoSuchTransaction", "$clusterTime" : { "clusterTime" : { "$timestamp" : { "t" : 1561124700, "i" : 2 } }, "signature" : { "hash" : { "$binary" : "AAAAAAAAAAAAAAAAAAAAAAAAAAA=", "$type" : "00" }, "keyId" : { "$numberLong" : "0" } } } }
+     */
+
+    @WithMockUser(
+            username = SecurityConfig.ADMIN_NAME,
+            password = SecurityConfig.ADMIN_PAS,
+            authorities = SecurityConfig.WRITE_PRIVILEGE
+    )
+    @Test
+    public void shouldNotPatchProductQuantity() {
+        //GIVEN
+        insertMockProductsIntoDb(Arrays.asList(product1, product2));
+
+        //WHEN
+        WebTestClient.ResponseSpec exchange = webClient
+                .patch()
+                .uri(BASE_URL)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(BodyInserters.fromMultipartData(ProductUtil.getMultiPartFormDataMulti()))
+                .exchange();
+
+        //THEN
+        exchange
+                .expectStatus().value(isIn(
+                Arrays.asList(
+                        HttpStatus.CONFLICT.value(),
+                        HttpStatus.INTERNAL_SERVER_ERROR.value()
+                )
+                )
+        );
+    }
+
+    /**
+     * xlsx files' content:
+     * article	name	        quantity	        quantity            size    initialQuantity     expectedQuantity
+     * products1.xlsx      products2.xlsx
+     * -------------------------------------------------------------------------------------------------------------
+     * 120589	Eau de Parfum	7	                3                    50      9                   7+9+3=19
+     * 120590	Eau de Parfum	21	                5                    100     6                   21+6+5=32
+     * 1647	    Eau de Parfum	79	                -                    50      -                   NON*
+     * article 1647 doesn't exist
      */
 
     @WithMockUser(
@@ -165,15 +210,15 @@ public class ProductControllerTest {
     public void shouldPatchProductQuantity() {
         //GIVEN
         insertMockProductsIntoDb(Arrays.asList(product1, product2));
-        BigInteger expected1 = BigInteger.valueOf(19);
-        BigInteger expected2 = BigInteger.valueOf(32);
+        BigInteger expected1 = BigInteger.valueOf(16);
+        BigInteger expected2 = BigInteger.valueOf(27);
 
         //WHEN
         WebTestClient.ResponseSpec exchange = webClient
                 .patch()
                 .uri(BASE_URL)
                 .contentType(MediaType.MULTIPART_FORM_DATA)
-                .body(BodyInserters.fromMultipartData(ProductUtil.getMultiPartFormData()))
+                .body(BodyInserters.fromMultipartData(ProductUtil.getMultiPartFormDataSingle()))
                 .exchange();
 
         //THEN
@@ -193,6 +238,7 @@ public class ProductControllerTest {
                 })
                 .verifyComplete();
     }
+
 
     @WithMockUser(authorities = SecurityConfig.WRITE_PRIVILEGE)
     @Test

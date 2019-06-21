@@ -1,8 +1,13 @@
 language: java
-jdk: openjdk8
+jdk: openjdk11
+
+services: docker
 
 before_install:
 - chmod +x gradlew
+- docker network create mongo-cluster
+- docker run --name mongo -p 27017:27017 -d --net mongo-cluster mongo:4.0.10 --replSet rs0
+- docker exec -it mongo mongo --eval "printjson(rs.initiate())"
 
 script:
 - ./gradlew clean build

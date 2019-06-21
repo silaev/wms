@@ -3,7 +3,7 @@ package com.silaev.wms.integration;
 import com.silaev.wms.annotation.version.ApiV1;
 import com.silaev.wms.dto.ProductDto;
 import com.silaev.wms.security.SecurityConfig;
-import com.silaev.wms.util.ProductUtil;
+import com.silaev.wms.testutil.ProductUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +23,7 @@ import reactor.core.publisher.Flux;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
 @ActiveProfiles("test")
-public class SecurityTest {
+public class SecurityITTest {
     public static final String BASE_URL = ApiV1.BASE_URL;
 
     @Autowired
@@ -97,7 +97,7 @@ public class SecurityTest {
                 .patch()
                 .uri(BASE_URL)
                 .contentType(MediaType.MULTIPART_FORM_DATA)
-                .body(BodyInserters.fromMultipartData(ProductUtil.getMultiPartFormData()))
+                .body(BodyInserters.fromMultipartData(ProductUtil.getMultiPartFormDataMulti()))
                 .exchange();
 
         //THEN

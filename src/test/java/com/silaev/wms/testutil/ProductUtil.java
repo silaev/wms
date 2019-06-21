@@ -1,6 +1,5 @@
-package com.silaev.wms.util;
+package com.silaev.wms.testutil;
 
-import com.silaev.wms.dto.ProductDto;
 import com.silaev.wms.entity.Brand;
 import com.silaev.wms.entity.Product;
 import com.silaev.wms.entity.Size;
@@ -10,28 +9,12 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.util.MultiValueMap;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 public class ProductUtil {
-    public static ProductDto mockProductDto(Long article,
-                                             String name,
-                                             Brand brand,
-                                             BigDecimal price,
-                                             Integer quantity,
-                                             Size size50) {
-        return ProductDto.builder()
-                .article(article)
-                .name(name)
-                .brand(brand.getBrandName())
-                .price(price)
-                .quantity(BigInteger.valueOf(quantity))
-                .size(size50.getSizeInteger())
-                .build();
-    }
-
     public static Product mockProduct(Long article,
                                             String name,
                                             Brand brand,
@@ -48,7 +31,7 @@ public class ProductUtil {
                 .build();
     }
 
-    public static MultiValueMap<String, HttpEntity<?>> getMultiPartFormData() {
+    public static MultiValueMap<String, HttpEntity<?>> getMultiPartFormDataMulti() {
         MultipartBodyBuilder builder = new MultipartBodyBuilder();
         Resource file1 = new ClassPathResource("products1.xlsx");
         Resource file2 = new ClassPathResource("products2.xlsx");
@@ -57,12 +40,14 @@ public class ProductUtil {
         return builder.build();
     }
 
+    public static MultiValueMap<String, HttpEntity<?>> getMultiPartFormDataSingle() {
+        MultipartBodyBuilder builder = new MultipartBodyBuilder();
+        Resource file1 = new ClassPathResource("products1.xlsx");
+        builder.part("file", file1).header("file", "file");
+        return builder.build();
+    }
+
     public static String encodeQueryParam(String param) {
-        try {
-            return URLEncoder.encode(param, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        throw new RuntimeException(String.format("Cannot encodeQueryParam %s", param));
+        return URLEncoder.encode(param, StandardCharsets.UTF_8);
     }
 }

@@ -9,6 +9,7 @@ import com.silaev.wms.service.ProductService;
 import com.silaev.wms.service.UploadProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.multipart.FilePart;
@@ -42,6 +43,9 @@ public class ProductController {
     private final ProductService productService;
     private final UploadProductService uploadProductService;
 
+    @Value("${spring.profiles.active}")
+    private String activeProfile;
+
     @InitBinder
     public void initBinder(WebDataBinder dataBinder) {
         dataBinder.registerCustomEditor(Brand.class, new StringToBrandConverter());
@@ -58,11 +62,13 @@ public class ProductController {
                                            @RequestParam(value = "brand", required = false) Brand brand) {
         log.debug("findProductsByNameOrBrand: {}, {}", name, brand);
 
+        if ("dev".equals(activeProfile)) {
+            BlockHound.install();
+        }
+
         if ((name==null) && (brand==null)){
             throw new IllegalArgumentException("Neither name nor brand had been set as request param.");
         }
-
-        BlockHound.install();
 
         return productService.findProductsByNameOrBrand(name, brand);
     }
@@ -76,7 +82,9 @@ public class ProductController {
     public Flux<Product> findAll() {
         log.debug("findAll");
 
-        BlockHound.install();
+        if ("dev".equals(activeProfile)) {
+            BlockHound.install();
+        }
 
         return productService.findAll();
     }
@@ -92,7 +100,9 @@ public class ProductController {
             @Min(value = 1) BigInteger lastSize) {
         log.debug("findLastProducts: {}", lastSize);
 
-        BlockHound.install();
+        if ("dev".equals(activeProfile)) {
+            BlockHound.install();
+        }
 
         return productService.findLastProducts(lastSize);
     }
@@ -111,7 +121,9 @@ public class ProductController {
                                         @AuthenticationPrincipal Principal principal) {
         log.debug("createProduct");
 
-        BlockHound.install();
+        if ("dev".equals(activeProfile)) {
+            BlockHound.install();
+        }
 
         return productService.createProduct(productDto, principal.getName());
     }
@@ -127,7 +139,9 @@ public class ProductController {
                                            @AuthenticationPrincipal Principal principal) {
         log.debug("shouldPatchProductQuantity");
 
-        BlockHound.install();
+        if ("dev".equals(activeProfile)) {
+            BlockHound.install();
+        }
 
         return uploadProductService.patchProductQuantity(files, principal.getName())
                 .then();
