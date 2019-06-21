@@ -7,6 +7,7 @@ before_install:
 - chmod +x gradlew
 - docker network create mongo-cluster
 - docker run --name mongo -p 27017:27017 -d --net mongo-cluster mongo:4.0.10 --replSet rs0
+- sleep 40
 - docker exec -it mongo mongo --eval "printjson(rs.initiate())"
 
 script:
