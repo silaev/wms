@@ -7,13 +7,10 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 
 import java.math.BigInteger;
-import java.util.List;
 
 @Repository
 public interface ProductDao extends ReactiveMongoRepository<Product, String> {
     Flux<Product> findByNameOrBrand(String name, Brand brand);
-
-    Flux<Product> findByArticleIn(List<Long> articles);
 
     Flux<Product> findAllByOrderByQuantityAsc();
 

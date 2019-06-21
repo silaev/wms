@@ -1,5 +1,13 @@
 # HTTP API for small WMS (warehouse management system) based on Spring boot 2 Reactive WebFlux and Embedded MongoDB [![Build Status](https://travis-ci.org/silaev/wms.svg?branch=master)](https://travis-ci.org/silaev/wms)
 
+#### Prerequisite
+- Java 11
+
+Install Mongo replica set in Docker: 
+- docker network create mongo-cluster
+- docker run --name mongo -p 27017:27017 -d --net mongo-cluster mongo:4.0.10 --replSet rs0
+- docker exec -it mongo mongo --eval "printjson(rs.initiate())"
+
 #### General info
 The application lets:
 - create new products with article verification 
