@@ -1,7 +1,5 @@
 package com.silaev.wms.dto;
 
-import com.silaev.wms.entity.Brand;
-import com.silaev.wms.entity.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

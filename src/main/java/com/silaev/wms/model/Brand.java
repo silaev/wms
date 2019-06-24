@@ -1,4 +1,4 @@
-package com.silaev.wms.entity;
+package com.silaev.wms.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

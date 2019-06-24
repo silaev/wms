@@ -1,8 +1,8 @@
 package com.silaev.wms.testutil;
 
-import com.silaev.wms.entity.Brand;
 import com.silaev.wms.entity.Product;
-import com.silaev.wms.entity.Size;
+import com.silaev.wms.model.Brand;
+import com.silaev.wms.model.Size;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
