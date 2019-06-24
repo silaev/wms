@@ -1,9 +1,9 @@
 package com.silaev.wms.converter;
 
 import com.silaev.wms.dto.ProductDto;
-import com.silaev.wms.entity.Brand;
 import com.silaev.wms.entity.Product;
-import com.silaev.wms.entity.Size;
+import com.silaev.wms.model.Brand;
+import com.silaev.wms.model.Size;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 

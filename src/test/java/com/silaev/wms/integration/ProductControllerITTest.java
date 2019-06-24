@@ -4,9 +4,9 @@ import com.silaev.wms.annotation.version.ApiV1;
 import com.silaev.wms.converter.ProductToProductDtoConverter;
 import com.silaev.wms.dao.ProductDao;
 import com.silaev.wms.dto.ProductDto;
-import com.silaev.wms.entity.Brand;
 import com.silaev.wms.entity.Product;
-import com.silaev.wms.entity.Size;
+import com.silaev.wms.model.Brand;
+import com.silaev.wms.model.Size;
 import com.silaev.wms.security.SecurityConfig;
 import com.silaev.wms.testutil.ProductUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -91,7 +91,7 @@ public class ProductControllerITTest {
                         .queryParam("name", "AAA")
                         .queryParam("brand", ProductUtil.encodeQueryParam(Brand.ENGLISH_LAUNDRY.getBrandName()))
                         .build())
-                .accept(MediaType.TEXT_EVENT_STREAM)
+                .accept(MediaType.APPLICATION_STREAM_JSON)
                 .exchange();
         //THEN
         exchange
@@ -112,7 +112,7 @@ public class ProductControllerITTest {
         WebTestClient.ResponseSpec exchange = webClient
                 .get()
                 .uri(BASE_URL + "/admin/all")
-                .accept(MediaType.TEXT_EVENT_STREAM)
+                .accept(MediaType.APPLICATION_STREAM_JSON)
                 .exchange();
         //THEN
         exchange
@@ -137,7 +137,7 @@ public class ProductControllerITTest {
                 .uri(uriBuilder -> uriBuilder.path(BASE_URL + "/last")
                         //.queryParam("lastSize", "5") by default
                         .build())
-                .accept(MediaType.TEXT_EVENT_STREAM)
+                .accept(MediaType.APPLICATION_STREAM_JSON)
                 .exchange();
         //THEN
         exchange
@@ -181,12 +181,13 @@ public class ProductControllerITTest {
 
         //THEN
         exchange
-                .expectStatus().value(isIn(
-                Arrays.asList(
-                        HttpStatus.CONFLICT.value(),
-                        HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                        HttpStatus.ACCEPTED.value()//TODO: occurs on Travis
-                )
+                .expectStatus().value(
+                isIn(
+                        Arrays.asList(
+                                HttpStatus.CONFLICT.value(),
+                                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                                HttpStatus.ACCEPTED.value()//TODO: occurs on Travis
+                        )
                 )
         );
     }
@@ -230,11 +231,9 @@ public class ProductControllerITTest {
         Flux<Product> all = productDao.findAllByOrderByQuantityAsc();
         StepVerifier.create(all)
                 .assertNext(x -> {
-                    System.out.println("1" + x);
                     assertEquals(expected1, x.getQuantity());
                 })
                 .assertNext(x -> {
-                    System.out.println("2" + x);
                     assertEquals(expected2, x.getQuantity());
                 })
                 .verifyComplete();

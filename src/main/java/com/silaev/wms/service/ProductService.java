@@ -1,8 +1,8 @@
 package com.silaev.wms.service;
 
 import com.silaev.wms.dto.ProductDto;
-import com.silaev.wms.entity.Brand;
 import com.silaev.wms.entity.Product;
+import com.silaev.wms.model.Brand;
 import reactor.core.publisher.Flux;
 
 import java.math.BigInteger;

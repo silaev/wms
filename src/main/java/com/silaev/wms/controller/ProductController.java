@@ -3,13 +3,12 @@ package com.silaev.wms.controller;
 import com.silaev.wms.annotation.version.ApiV1;
 import com.silaev.wms.converter.StringToBrandConverter;
 import com.silaev.wms.dto.ProductDto;
-import com.silaev.wms.entity.Brand;
 import com.silaev.wms.entity.Product;
+import com.silaev.wms.model.Brand;
 import com.silaev.wms.service.ProductService;
 import com.silaev.wms.service.UploadProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.multipart.FilePart;
@@ -25,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.blockhound.BlockHound;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -43,9 +41,6 @@ public class ProductController {
     private final ProductService productService;
     private final UploadProductService uploadProductService;
 
-    @Value("${spring.profiles.active}")
-    private String activeProfile;
-
     @InitBinder
     public void initBinder(WebDataBinder dataBinder) {
         dataBinder.registerCustomEditor(Brand.class, new StringToBrandConverter());
@@ -57,14 +52,10 @@ public class ProductController {
      * @param brand RequestParam
      * @return Flux<ProductDto>
      */
-    @GetMapping(value = "/all", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = "/all", produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
     public Flux<ProductDto> findProductsByNameOrBrand(@RequestParam(value = "name", required = false) String name,
                                            @RequestParam(value = "brand", required = false) Brand brand) {
         log.debug("findProductsByNameOrBrand: {}, {}", name, brand);
-
-        if ("dev".equals(activeProfile)) {
-            BlockHound.install();
-        }
 
         if ((name==null) && (brand==null)){
             throw new IllegalArgumentException("Neither name nor brand had been set as request param.");
@@ -78,13 +69,9 @@ public class ProductController {
      * for administrative needs.
      * @return Flux<Product>
      */
-    @GetMapping(value = "/admin/all", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = "/admin/all", produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
     public Flux<Product> findAll() {
         log.debug("findAll");
-
-        if ("dev".equals(activeProfile)) {
-            BlockHound.install();
-        }
 
         return productService.findAll();
     }
@@ -94,15 +81,11 @@ public class ProductController {
      * @param lastSize - a number representing listSize. Default value is 5.
      * @return Flux<ProductDto>
      */
-    @GetMapping(value = "/last", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = "/last", produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
     public Flux<ProductDto> findLastProducts(
             @RequestParam(value = "lastSize", required = false, defaultValue = "5")
             @Min(value = 1) BigInteger lastSize) {
         log.debug("findLastProducts: {}", lastSize);
-
-        if ("dev".equals(activeProfile)) {
-            BlockHound.install();
-        }
 
         return productService.findLastProducts(lastSize);
     }
@@ -121,27 +104,19 @@ public class ProductController {
                                         @AuthenticationPrincipal Principal principal) {
         log.debug("createProduct");
 
-        if ("dev".equals(activeProfile)) {
-            BlockHound.install();
-        }
-
         return productService.createProduct(productDto, principal.getName());
     }
 
     /**
      * Updates the quantity of existing products matching them by article and size.
      * @param files Flux<FilePart>
-     * @return Mono<String> - textual status
+     * @return Mono<Void>
      */
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PatchMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Mono<Void> patchProductQuantity(@RequestPart("file") Flux<FilePart> files,
                                            @AuthenticationPrincipal Principal principal) {
         log.debug("shouldPatchProductQuantity");
-
-        if ("dev".equals(activeProfile)) {
-            BlockHound.install();
-        }
 
         return uploadProductService.patchProductQuantity(files, principal.getName())
                 .then();
