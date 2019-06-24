@@ -1,7 +1,7 @@
 package com.silaev.wms.dao;
 
-import com.silaev.wms.entity.Brand;
 import com.silaev.wms.entity.Product;
+import com.silaev.wms.model.Brand;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;

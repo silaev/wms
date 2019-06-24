@@ -1,6 +1,6 @@
 package com.silaev.wms.converter;
 
-import com.silaev.wms.entity.Brand;
+import com.silaev.wms.model.Brand;
 
 import java.beans.PropertyEditorSupport;
 

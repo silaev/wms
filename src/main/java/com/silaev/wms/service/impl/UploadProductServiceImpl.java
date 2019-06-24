@@ -76,7 +76,7 @@ public class UploadProductServiceImpl implements UploadProductService {
     }
 
     public Mono<Void> patchProductQuantity(Flux<FilePart> files, final String userName) {
-        return Mono.fromRunnable(() -> init(userName))
+        return Mono.fromRunnable(() -> init(userName)).publishOn(Schedulers.newElastic("init"))
                 .log(String.format("cleaning-up directory: %s", userName))
                 .then(files.flatMap(f ->
                                 saveFileToDiskAndUpdate(f, userName)
@@ -214,8 +214,7 @@ public class UploadProductServiceImpl implements UploadProductService {
     }
 
     private void init(String userName) {
-        String path = pathToStorage + "/" + userName;
-        Path rootLocation = Paths.get(path);
+        Path rootLocation = Paths.get(pathToStorage, userName);
 
         //clean up the root directory
         FileSystemUtils.deleteRecursively(rootLocation.toFile());
@@ -224,7 +223,7 @@ public class UploadProductServiceImpl implements UploadProductService {
         try {
             Files.createDirectories(rootLocation);
         } catch (IOException e) {
-            throw new UploadProductException(String.format("An error while creation the root directory: %s", path));
+            throw new UploadProductException(String.format("An error while creation the root directory for: %s", userName));
         }
     }
 }
