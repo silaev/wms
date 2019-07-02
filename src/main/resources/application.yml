@@ -3,9 +3,10 @@ spring:
     active: dev
 
 logging:
-  level:
-    com.silaev.wms: DEBUG
-    web: DEBUG
+  path: logs
+  file:
+    max-size: 20MB
+    max-history: 10
 
 storage:
   bulk-upload-path: uploads/files

@@ -44,3 +44,5 @@ git
 hs_err_pid*
 
 *.iml
+*.log
+/logs/

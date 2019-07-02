@@ -10,10 +10,9 @@ import com.silaev.wms.model.Size;
 import com.silaev.wms.security.SecurityConfig;
 import com.silaev.wms.testutil.ProductUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,7 +21,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 import reactor.core.publisher.Flux;
@@ -35,16 +33,15 @@ import java.util.Comparator;
 import java.util.List;
 
 import static org.hamcrest.Matchers.isIn;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
 @ActiveProfiles("test")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class ProductControllerITTest {
-    public static final String BASE_URL = ApiV1.BASE_URL;
+class ProductControllerITTest {
+    private static final String BASE_URL = ApiV1.BASE_URL;
 
     @Autowired
     private WebTestClient webClient;
@@ -62,8 +59,8 @@ public class ProductControllerITTest {
     private ProductDto productDto2;
     private ProductDto productDto3;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         product1 = ProductUtil.mockProduct(120589L, "AAA", Brand.DOLCE, BigDecimal.valueOf(9), 9, Size.SIZE_50);
         product2 = ProductUtil.mockProduct(120590L, "BBB", Brand.DOLCE, BigDecimal.valueOf(15.69), 6, Size.SIZE_100);
         product3 = ProductUtil.mockProduct(120591L, "CCC", Brand.ENGLISH_LAUNDRY, BigDecimal.valueOf(55.12), 3, Size.SIZE_100);
@@ -73,14 +70,14 @@ public class ProductControllerITTest {
         productDto3 = productConverter.convert(product3);
     }
 
-    @After
-    public void tearDown() {
+    @AfterEach
+    void tearDown() {
         StepVerifier.create(productDao.deleteAll()).verifyComplete();
     }
 
     @WithMockUser(authorities = SecurityConfig.READ_PRIVILEGE)
     @Test
-    public void shouldFindProductsByNameOrBrand() {
+    void shouldFindProductsByNameOrBrand() {
         //GIVEN
         insertMockProductsIntoDb(Arrays.asList(product1, product2, product3));
 
@@ -104,7 +101,7 @@ public class ProductControllerITTest {
 
     @WithMockUser(authorities = SecurityConfig.READ_PRIVILEGE)
     @Test
-    public void shouldFindAll() {
+    void shouldFindAll() {
         //GIVEN
         insertMockProductsIntoDb(Arrays.asList(product1, product2, product3));
 
@@ -125,7 +122,7 @@ public class ProductControllerITTest {
 
     @WithMockUser(authorities = SecurityConfig.READ_PRIVILEGE)
     @Test
-    public void shouldFindLastProducts() {
+    void shouldFindLastProducts() {
         //GIVEN
         //log.debug("After insert product1:{} product2:{} product3:{}",
         // product1.getQuantity(), product2.getQuantity(), product3.getQuantity());
@@ -167,7 +164,7 @@ public class ProductControllerITTest {
             authorities = SecurityConfig.WRITE_PRIVILEGE
     )
     @Test
-    public void shouldNotPatchProductQuantity() {
+    void shouldNotPatchProductQuantity() {
         //GIVEN
         insertMockProductsIntoDb(Arrays.asList(product1, product2));
 
@@ -186,7 +183,7 @@ public class ProductControllerITTest {
                         Arrays.asList(
                                 HttpStatus.CONFLICT.value(),
                                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                                HttpStatus.ACCEPTED.value()//TODO: occurs on Travis
+                                HttpStatus.ACCEPTED.value()
                         )
                 )
         );
@@ -209,7 +206,7 @@ public class ProductControllerITTest {
             authorities = SecurityConfig.WRITE_PRIVILEGE
     )
     @Test
-    public void shouldPatchProductQuantity() {
+    void shouldPatchProductQuantity() {
         //GIVEN
         insertMockProductsIntoDb(Arrays.asList(product1, product2));
         BigInteger expected1 = BigInteger.valueOf(16);
@@ -242,7 +239,7 @@ public class ProductControllerITTest {
 
     @WithMockUser(authorities = SecurityConfig.WRITE_PRIVILEGE)
     @Test
-    public void shouldCreateProducts() {
+    void shouldCreateProducts() {
         //GIVEN
         Flux<ProductDto> dtoFlux = Flux.just(productDto1, productDto2);
 
