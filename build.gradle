@@ -78,11 +78,13 @@ wrapper{
 
 jacocoTestReport {
     reports {
-        xml.enabled false
+        xml.enabled true
         csv.enabled false
-        html.destination file("${buildDir}/jacocoHtml")
-    }
+        html.enabled true
 
+        xml.destination file("${buildDir}/reports/jacoco/report.xml")
+    }
+    
     afterEvaluate {
         afterEvaluate {
             classDirectories.setFrom(
