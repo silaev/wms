@@ -12,11 +12,11 @@ public enum Size {
 
     private final Integer sizeInteger;
 
-    public static Size bySizeInteger(Integer sizeInteger){
+    public static Size bySizeInteger(Integer sizeInteger) {
         Objects.requireNonNull(sizeInteger);
 
-        for (Size size: values()) {
-            if(size.getSizeInteger().equals(sizeInteger)){
+        for (Size size : values()) {
+            if (size.getSizeInteger().equals(sizeInteger)) {
                 return size;
             }
         }

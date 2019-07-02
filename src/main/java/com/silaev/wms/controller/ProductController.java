@@ -48,16 +48,17 @@ public class ProductController {
 
     /**
      * Gets products in ProductDto representation.
-     * @param name RequestParam
+     *
+     * @param name  RequestParam
      * @param brand RequestParam
      * @return Flux<ProductDto>
      */
     @GetMapping(value = "/all", produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
     public Flux<ProductDto> findProductsByNameOrBrand(@RequestParam(value = "name", required = false) String name,
-                                           @RequestParam(value = "brand", required = false) Brand brand) {
+                                                      @RequestParam(value = "brand", required = false) Brand brand) {
         log.debug("findProductsByNameOrBrand: {}, {}", name, brand);
 
-        if ((name==null) && (brand==null)){
+        if ((name == null) && (brand == null)) {
             throw new IllegalArgumentException("Neither name nor brand had been set as request param.");
         }
 
@@ -67,6 +68,7 @@ public class ProductController {
     /**
      * Gets products in Product entity representation
      * for administrative needs.
+     *
      * @return Flux<Product>
      */
     @GetMapping(value = "/admin/all", produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
@@ -78,6 +80,7 @@ public class ProductController {
 
     /**
      * Gets products whose quantity are less or equal listSize
+     *
      * @param lastSize - a number representing listSize. Default value is 5.
      * @return Flux<ProductDto>
      */
@@ -92,6 +95,7 @@ public class ProductController {
 
     /**
      * Creates a new product in MongoDB.
+     *
      * @param productDto
      * @return
      */
@@ -109,6 +113,7 @@ public class ProductController {
 
     /**
      * Updates the quantity of existing products matching them by article and size.
+     *
      * @param files Flux<FilePart>
      * @return Mono<Void>
      */

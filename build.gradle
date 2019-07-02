@@ -10,6 +10,7 @@ buildscript {
 plugins {
     id "io.franzbecker.gradle-lombok" version "3.1.0"
     id 'com.sourcemuse.mongo' version '1.0.7'
+    id 'jacoco'
 }
 
 apply plugin: 'java'
@@ -18,7 +19,7 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
 group = 'com.silaev.wms'
-version = '0.0.4-SNAPSHOT'
+version = '0.0.5-SNAPSHOT'
 sourceCompatibility = '11'
 
 repositories {
@@ -28,10 +29,6 @@ repositories {
 
 springBoot {
     mainClassName = 'com.silaev.wms.WmsApplication'
-}
-
-task integrationTest(type: Test) {
-    runWithMongoDb = true
 }
 
 dependencies {
@@ -66,12 +63,87 @@ dependencies {
 
 test {
     useJUnitPlatform()
-    maxParallelForks = 1
+
+    maxParallelForks = 2
     testLogging.showStandardStreams = true
     testLogging.exceptionFormat = 'full'
+
+    finalizedBy jacocoTestReport
 }
 
 wrapper{
-    gradleVersion = '5.1'
+    gradleVersion = '5.4.1'
     distributionType = Wrapper.DistributionType.BIN
 }
+
+jacocoTestReport {
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination file("${buildDir}/jacocoHtml")
+    }
+
+    afterEvaluate {
+        afterEvaluate {
+            classDirectories.setFrom(
+                    files(
+                            classDirectories.files.collect {
+                                fileTree(dir: it, exclude:
+                                        [
+                                                'com/silaev/wms/entity/**',
+                                                'com/silaev/wms/dto/**',
+                                                'com/silaev/wms/config/**',
+                                                'com/silaev/wms/exception/**',
+                                                'com/silaev/wms/model'
+                                        ]
+                                )
+                            }
+                    )
+            )
+        }
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.8
+            }
+        }
+
+        rule {
+            enabled = false
+            element = 'CLASS'
+            includes = ['org.gradle.*']
+
+            limit {
+                counter = 'LINE'
+                value = 'TOTALCOUNT'
+                maximum = 0.8
+            }
+        }
+    }
+
+    afterEvaluate {
+        afterEvaluate {
+            classDirectories.setFrom(
+                    files(
+                            classDirectories.files.collect {
+                                fileTree(dir: it, exclude:
+                                        [
+                                                'com/silaev/wms/entity/**',
+                                                'com/silaev/wms/dto/**',
+                                                'com/silaev/wms/config/**',
+                                                'com/silaev/wms/exception/**',
+                                                'com/silaev/wms/model'
+                                        ]
+                                )
+                            }
+                    )
+            )
+        }
+    }
+}
+
+check.dependsOn jacocoTestCoverageVerification

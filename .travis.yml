@@ -11,6 +11,9 @@ before_install:
 - ./wait-for-mongo.sh
 - docker exec -it mongo mongo --eval "printjson(rs.initiate())"
 
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
 script:
 - ./gradlew clean build
 

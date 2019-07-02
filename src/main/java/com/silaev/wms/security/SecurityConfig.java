@@ -1,4 +1,3 @@
-
 package com.silaev.wms.security;
 
 import org.springframework.context.annotation.Bean;
@@ -19,15 +18,15 @@ public class SecurityConfig {
 
     public static final String READ_PRIVILEGE = "READ_PRIVILEGE";
     public static final String WRITE_PRIVILEGE = "WRITE_PRIVILEGE";
-	public static final String ADMIN_NAME = "admin";
-	public static final String ADMIN_PAS = "admin";
-	public static final String ADMIN_ROLE = "ADMIN";
-	public static final String USER_NAME = "user";
-	public static final String USER_PAS = "user";
-	public static final String USER_ROLE = "USER";
+    public static final String ADMIN_NAME = "admin";
+    public static final String ADMIN_PAS = "admin";
+    public static final String ADMIN_ROLE = "ADMIN";
+    public static final String USER_NAME = "user";
+    public static final String USER_PAS = "user";
+    public static final String USER_ROLE = "USER";
 
-	@Bean
-	SecurityWebFilterChain springWebFilterChain(ServerHttpSecurity http) {
+    @Bean
+    SecurityWebFilterChain springWebFilterChain(ServerHttpSecurity http) {
         return http
                 .authorizeExchange()
                 .pathMatchers(HttpMethod.GET, "/**").hasAuthority(READ_PRIVILEGE)
@@ -42,29 +41,29 @@ public class SecurityConfig {
                 .csrf().disable()
                 .build();
 
-	}
+    }
 
-	@Bean
-	public MapReactiveUserDetailsService userDetailsService() {
-		UserDetails user = User
-				.withUsername(USER_NAME)
-				.password(passwordEncoder().encode(USER_PAS))
-				.roles(USER_ROLE)
+    @Bean
+    public MapReactiveUserDetailsService userDetailsService() {
+        UserDetails user = User
+                .withUsername(USER_NAME)
+                .password(passwordEncoder().encode(USER_PAS))
+                .roles(USER_ROLE)
                 .authorities(READ_PRIVILEGE)
-				.build();
+                .build();
 
-		UserDetails admin = User
-				.withUsername(ADMIN_NAME)
-				.password(passwordEncoder().encode(ADMIN_PAS))
-				.roles(ADMIN_ROLE)
+        UserDetails admin = User
+                .withUsername(ADMIN_NAME)
+                .password(passwordEncoder().encode(ADMIN_PAS))
+                .roles(ADMIN_ROLE)
                 .authorities(READ_PRIVILEGE, WRITE_PRIVILEGE)
-				.build();
+                .build();
 
-		return new MapReactiveUserDetailsService(user, admin);
-	}
+        return new MapReactiveUserDetailsService(user, admin);
+    }
 
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new SCryptPasswordEncoder();
-	}
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new SCryptPasswordEncoder();
+    }
 }

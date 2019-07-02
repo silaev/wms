@@ -15,12 +15,14 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 public class ProductUtil {
-    public static Product mockProduct(Long article,
-                                            String name,
-                                            Brand brand,
-                                            BigDecimal price,
-                                            Integer quantity,
-                                            Size size50) {
+    public static Product mockProduct(
+            Long article,
+            String name,
+            Brand brand,
+            BigDecimal price,
+            Integer quantity,
+            Size size50
+    ) {
         return Product.builder()
                 .article(article)
                 .name(name)

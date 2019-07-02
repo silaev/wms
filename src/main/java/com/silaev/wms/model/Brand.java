@@ -14,11 +14,11 @@ public enum Brand {
 
     private final String brandName;
 
-    public static Brand byName(String brandName){
+    public static Brand byName(String brandName) {
         Objects.requireNonNull(brandName);
 
-        for (Brand brand: values()) {
-            if(brand.getBrandName().equalsIgnoreCase(brandName)){
+        for (Brand brand : values()) {
+            if (brand.getBrandName().equalsIgnoreCase(brandName)) {
                 return brand;
             }
         }
