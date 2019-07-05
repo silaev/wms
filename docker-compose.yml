@@ -1,0 +1,42 @@
+version: "3.7"
+services:
+  mongo1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: "mongo1"
+    ports:
+      - 50001:50001
+    command: mongod --replSet docker-rs --port 50001
+    networks:
+      - mongonet
+    depends_on:
+      - mongo2
+      - mongo3
+
+  mongo2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: "mongo2"
+    ports:
+      - 50002:50002
+    command: mongod --replSet docker-rs --port 50002
+    networks:
+      - mongonet
+
+  mongo3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: "mongo3"
+    ports:
+      - 50003:50003
+    command: mongod --replSet docker-rs --port 50003
+    networks:
+      - mongonet
+
+networks:
+  mongonet:
+    external: false
+    name: mongo-cluster

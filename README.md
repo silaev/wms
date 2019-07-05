@@ -5,7 +5,7 @@
 #### Prerequisite
 - Java 11
 
-Install Mongo replica set in Docker: 
+Install a single Mongo replica set in Docker: 
 - docker network create mongo-cluster
 - docker run --name mongo -p 27017:27017 -d --net mongo-cluster mongo:4.0.10 --replSet rs0
 - docker exec -it mongo mongo --eval "printjson(rs.initiate())"
@@ -48,3 +48,21 @@ Remember, Man in the middle attacks are real.
 avoid inconsistent state.
 5. Optimistic Locking requires to set the WriteConcern to ACKNOWLEDGED.
 Otherwise OptimisticLockingFailureException can be silently swallowed.
+
+#### Installing a 3 replica sets 
+spring:
+  data:
+    mongodb:
+      uri: mongodb://mongo1:50001,mongo2:50002,mongo3:50003/test?replicaSet=docker-rs
+      
+on Windows add 127.0.0.1 mongo1 mongo2 mongo3 to host
+
+docker run --name mongo1 -d --net mongo-cluster -p 50001:50001 mongo:4.0.10 mongod --replSet docker-rs --port 50001
+docker run --name mongo2 -d --net mongo-cluster -p 50002:50002 mongo:4.0.10 mongod --replSet docker-rs --port 50002
+docker run --name mongo3 -d --net mongo-cluster -p 50003:50003 mongo:4.0.10 mongod --replSet docker-rs --port 50003
+
+On Unix, you will get this error if your script has Dos/Windows end of lines (CRLF) instead of Unix end of lines (LF).
+if init.js was modified, then: dos2unix init.js
+ 
+docker cp scripts/ mongo1:/scripts/
+docker exec -it mongo1  /bin/sh -c "mongo --port 50001 < /scripts/init.js"

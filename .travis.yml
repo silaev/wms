@@ -5,11 +5,9 @@ services: docker
 
 before_install:
 - chmod +x gradlew
-- chmod +x wait-for-mongo.sh
-- docker network create mongo-cluster
-- docker run --name mongo -p 27017:27017 -d --net mongo-cluster mongo:4.0.10 --replSet rs0
-- ./wait-for-mongo.sh
-- docker exec -it mongo mongo --eval "printjson(rs.initiate())"
+- chmod +x scripts/wait-for-mongo.sh
+- docker-compose -f docker-compose.yml up -d
+- docker-compose exec mongo1 /bin/sh -c "mongo --port 50001 < /scripts/init.js"
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
