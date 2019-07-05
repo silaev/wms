@@ -3,9 +3,17 @@ jdk: openjdk11
 
 services: docker
 
+env:
+  - DOCKER_COMPOSE_VERSION=1.23.2
+
 before_install:
+  #update compose
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+  #install mongo
 - chmod +x gradlew
-- chmod +x scripts/wait-for-mongo.sh
 - docker-compose -f docker-compose.yml up -d
 - docker-compose exec mongo1 /bin/sh -c "mongo --port 50001 < /scripts/init.js"
 
