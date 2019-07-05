@@ -19,6 +19,7 @@ before_install:
 
   - chmod +x gradlew
   - docker-compose -f docker-compose.yml up -d
+  - sleep 40
   - docker-compose exec mongo1 /bin/sh -c "mongo --port 50001 < /scripts/init.js"
 
 after_success:
