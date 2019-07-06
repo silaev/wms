@@ -3,6 +3,12 @@ jdk: openjdk11
 
 services: docker
 
+addons:
+  hosts:
+    - mongo1
+    - mongo2
+    - mongo3
+    
 env:
   - DOCKER_COMPOSE_VERSION=1.23.2
 
