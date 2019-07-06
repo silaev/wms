@@ -1,4 +1,5 @@
 language: java
+
 jdk: openjdk11
 
 services: docker
@@ -26,7 +27,6 @@ before_install:
   #Install 3 node replica set MongoDB
   - chmod +x gradlew
   - docker-compose -f docker-compose.yml up -d
-  #- docker-compose exec mongo1 /bin/sh -c scripts/wait-for-mongo.sh
   - docker-compose exec mongo1 /bin/sh -c "mongo --port 50001 < /scripts/init.js"
 
 after_success:
