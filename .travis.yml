@@ -23,9 +23,9 @@ before_install:
     echo "yes1";
     echo "yes2";
     else
-    "no";
-    "no1";
-    "no2";
+    echo "no";
+    echo "no1";
+    echo "no2";
     fi
   #update docker to latest
   #- curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
