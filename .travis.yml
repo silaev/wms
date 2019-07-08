@@ -9,11 +9,11 @@ addons:
     - mongo1
     - mongo2
     - mongo3
-    if: MONGODB_MODE==3
 
 env:
   matrix:
-    #- MONGODB_MODE=3 DOCKER_COMPOSE_VERSION=1.23.2
+    - MONGODB_MODE=3 DOCKER_COMPOSE_VERSION=1.23.2
+    # 0 - none, 1 - single replica set, 3 - triple replica set
     - MONGODB_MODE=1
 
 before_install:
