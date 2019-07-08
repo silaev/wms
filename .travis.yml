@@ -11,23 +11,31 @@ addons:
     - mongo3
 
 env:
-  - DOCKER_COMPOSE_VERSION=1.23.2
+  global:
+    - MONGODB_MODE=1
+    - DOCKER_COMPOSE_VERSION=1.23.2
+  matrix:
+    MONGODB_MODE=1 DOCKER_COMPOSE_VERSION=1.23.2
 
 before_install:
+  - if [[ ENV['MONGODB_MODE'] == 1 ]]; then
+    echo "yes";
+    else "no";
+    fi
   #update docker to latest
-  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-  - sudo apt-get update
-  - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
+  #- curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  #- sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  #- sudo apt-get update
+  #- sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
   #update docker to docker-compose to DOCKER_COMPOSE_VERSION
-  - sudo rm /usr/local/bin/docker-compose
-  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-  - chmod +x docker-compose
-  - sudo mv docker-compose /usr/local/bin
+  #- sudo rm /usr/local/bin/docker-compose
+  #- curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  #- chmod +x docker-compose
+  #- sudo mv docker-compose /usr/local/bin
   #Install 3 node replica set MongoDB
-  - chmod +x gradlew
-  - docker-compose -f docker-compose.yml up -d
-  - docker-compose exec mongo1 /bin/sh -c "mongo --port 50001 < /scripts/init.js"
+  #- chmod +x gradlew
+  #- docker-compose -f docker-compose.yml up -d
+  #- docker-compose exec mongo1 /bin/sh -c "mongo --port 50001 < /scripts/init.js"
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
