@@ -18,7 +18,7 @@ env:
     MONGODB_MODE=1 DOCKER_COMPOSE_VERSION=1.23.2
 
 before_install:
-  - if [[ $MONGODB_MODE == MULTI ]]; then
+  - if [[ $MONGODB_MODE == "MULTI" ]]; then
     echo "yes";
     else "no";
     fi
