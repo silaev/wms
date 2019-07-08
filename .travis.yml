@@ -19,7 +19,9 @@ env:
 
 before_install:
   - if [[ $MONGODB_NODE_NUMBER == 3 ]]; then
-    echo "yes"; echo "yes1"; echo "yes2";
+    echo "yes";
+    echo "yes1";
+    echo "yes2";
     else "no";
     fi
   #update docker to latest
