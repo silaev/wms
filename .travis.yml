@@ -12,13 +12,13 @@ addons:
 
 env:
   global:
-    - MONGODB_MODE=1
+    - MONGODB_MODE=MULTI
     - DOCKER_COMPOSE_VERSION=1.23.2
   matrix:
     MONGODB_MODE=1 DOCKER_COMPOSE_VERSION=1.23.2
 
 before_install:
-  - if [[ $MONGODB_MODE == 1 ]]; then
+  - if [[ $MONGODB_MODE == MULTI ]]; then
     echo "yes";
     else "no";
     fi
