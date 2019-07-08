@@ -11,11 +11,11 @@ addons:
     - mongo3
 
 env:
-  global:
-    - MONGODB_MODE=3
-    - DOCKER_COMPOSE_VERSION=1.23.2
+  #global:
+  #  - MONGODB_MODE=3
+  #  - DOCKER_COMPOSE_VERSION=1.23.2
   matrix:
-    MONGODB_MODE=1 DOCKER_COMPOSE_VERSION=1.23.2
+    MONGODB_MODE=3 DOCKER_COMPOSE_VERSION=1.23.2
 
 before_install:
   - if [[ $MONGODB_MODE == 3 ]]; then
@@ -27,6 +27,7 @@ before_install:
     echo "no1";
     echo "no2";
     fi
+
   #update docker to latest
   #- curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
   #- sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
