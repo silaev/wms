@@ -4,7 +4,7 @@ while [[ ${attempt} -le 59 ]]; do
     attempt=$(( $attempt + 1 ))
     echo "Waiting for server to be up (attempt: $attempt)..."
     result=$(docker logs mongo)
-    if grep -q 'waiting for connections on port 27017' <<< ${result} ; then
+    if grep -q 'waiting for connections on port' <<< ${result} ; then
       echo "Mongodb is up!"
       break
     fi

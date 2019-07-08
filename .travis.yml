@@ -1,15 +1,33 @@
 language: java
+
 jdk: openjdk11
 
 services: docker
 
+addons:
+  hosts:
+    - mongo1
+    - mongo2
+    - mongo3
+
+env:
+  - DOCKER_COMPOSE_VERSION=1.23.2
+
 before_install:
-- chmod +x gradlew
-- chmod +x wait-for-mongo.sh
-- docker network create mongo-cluster
-- docker run --name mongo -p 27017:27017 -d --net mongo-cluster mongo:4.0.10 --replSet rs0
-- ./wait-for-mongo.sh
-- docker exec -it mongo mongo --eval "printjson(rs.initiate())"
+  #update docker to latest
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  - sudo apt-get update
+  - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
+  #update docker to docker-compose to DOCKER_COMPOSE_VERSION
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+  #Install 3 node replica set MongoDB
+  - chmod +x gradlew
+  - docker-compose -f docker-compose.yml up -d
+  - docker-compose exec mongo1 /bin/sh -c "mongo --port 50001 < /scripts/init.js"
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
@@ -18,8 +36,8 @@ script:
 - ./gradlew clean build
 
 before_cache:
-- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-- rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
   - $HOME/.gradle/caches/
