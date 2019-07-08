@@ -12,7 +12,7 @@ addons:
 
 env:
   global:
-    - MONGODB_MODE=MULTI
+    - MONGODB_MODE="MULTI"
     - DOCKER_COMPOSE_VERSION=1.23.2
   matrix:
     MONGODB_MODE=1 DOCKER_COMPOSE_VERSION=1.23.2
