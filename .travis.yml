@@ -12,13 +12,13 @@ addons:
 
 env:
   global:
-    - MONGODB_NODE_NUMBER=YYY
+    - MONGODB_NODE_NUMBER=3
     - DOCKER_COMPOSE_VERSION=1.23.2
   matrix:
     MONGODB_MODE=1 DOCKER_COMPOSE_VERSION=1.23.2
 
 before_install:
-  - if [[ ${MONGODB_NODE_NUMBER} == "YYY" ]]; then
+  - if [[ $MONGODB_NODE_NUMBER == 3 ]]; then
     echo "yes";
     echo "yes1";
     echo "yes2";
