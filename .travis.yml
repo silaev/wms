@@ -47,8 +47,10 @@ before_install:
     fi
 
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
-
+  - if [[ branch = master ]]; then
+    bash <(curl -s https://codecov.io/bash)
+    fi
+  
 script:
   - if [[ $MONGODB_MODE == 1 ]]; then
     echo "run gradlew with spring.data.mongodb.uri param";
