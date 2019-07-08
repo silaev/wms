@@ -6,9 +6,9 @@
 - Java 11
 - Docker v18.09.2 (was tested on this version) 
 - docker-compose v1.23.2 (compose file version: "3.7", was tested on this version) 
-(if you'd prefer just Docker, see `Installing a 3 replica sets MongoDB via Docker`)
+(if you'd prefer just Docker, see `Installing a 3 replica set MongoDB via just Docker`)
 
-Install a single Mongo replica set in Docker, run in a terminal: 
+Install a 3 replica set MongoDB via Docker-Compose, run in a terminal: 
 - docker-compose -f docker-compose.yml up -d
 - docker-compose exec mongo1 /bin/sh -c "mongo --port 50001 < /scripts/init.js"
 See .travis.yml for more details
@@ -52,7 +52,7 @@ avoid inconsistent state.
 5. Optimistic Locking requires to set the WriteConcern to ACKNOWLEDGED.
 Otherwise OptimisticLockingFailureException can be silently swallowed.
 
-#### Installing a 3 replica sets MongoDB via Docker (without compose)
+#### Installing a 3 replica set MongoDB via just Docker (without compose)
 - Set mongodb url in Spring boot app 
 `spring:
   data:
@@ -76,7 +76,7 @@ So run in terminal if scripts files were modifies:
 
 Alternately, use Docker compose (see steps above)
 
-#### Installing a single replica sets MongoDB via Docker 
+#### Installing a single replica set MongoDB via Docker 
 - chmod +x wait-for-mongo.sh
 - docker network create mongo-cluster
 - docker run --name mongo -p 27017:27017 -d --net mongo-cluster mongo:4.0.10 --replSet rs0
