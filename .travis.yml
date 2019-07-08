@@ -13,6 +13,7 @@ addons:
 env:
   matrix:
     MONGODB_MODE=3 DOCKER_COMPOSE_VERSION=1.23.2
+    MONGODB_MODE=1 DOCKER_COMPOSE_VERSION=1.23.2
 
 before_install:
   - echo "update docker to latest"
@@ -20,6 +21,7 @@ before_install:
   - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
   - sudo apt-get update
   - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
+  - chmod +x gradlew;
 
   - if [[ $MONGODB_MODE == 3 ]]; then
     echo "update docker-compose to DOCKER_COMPOSE_VERSION";
@@ -29,16 +31,15 @@ before_install:
     sudo mv docker-compose /usr/local/bin;
 
     echo "install 3 node replica set MongoDB";
-    chmod +x gradlew;
     docker-compose -f docker-compose.yml up -d;
     docker-compose exec mongo1 /bin/sh -c "mongo --port 50001 < /scripts/init.js";
     fi
-    
+
     if [[ $MONGODB_MODE == 1 ]]; then
     echo "install a single replica set MongoDB";
     chmod +x /scripts/wait-for-mongo.sh;
     docker network create mongo-cluster;
-    docker run --name mongo -p 27017:27017 -d --net mongo-cluster mongo:4.0.10 --replSet rs0;
+    docker run --name mongo1 -p 27017:27017 -d --net mongo-cluster mongo:4.0.10 --replSet rs0;
     ./scripts/wait-for-mongo.sh;
     docker exec -it mongo mongo --eval "printjson(rs.initiate())";
     fi
@@ -47,7 +48,11 @@ after_success:
   - bash <(curl -s https://codecov.io/bash)
 
 script:
-- ./gradlew clean build
+  - if [[ $MONGODB_MODE == 1 ]]; then
+    ./gradlew clean build -D"spring.data.mongodb.uri"="mongodb://mongo1:27017/test?replicaSet=rs0"
+    else
+    ./gradlew clean build
+    fi
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
