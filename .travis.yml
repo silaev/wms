@@ -12,17 +12,19 @@ addons:
 
 env:
   global:
-    - MONGODB_NODE_NUMBER=3
+    - MONGODB_NODE_NUMBER=YYY
     - DOCKER_COMPOSE_VERSION=1.23.2
   matrix:
     MONGODB_MODE=1 DOCKER_COMPOSE_VERSION=1.23.2
 
 before_install:
-  - if [[ $MONGODB_NODE_NUMBER == 3 ]]; then
+  - if [[ ${MONGODB_NODE_NUMBER} == "YYY" ]]; then
     echo "yes";
     echo "yes1";
     echo "yes2";
     else "no";
+    else "no1";
+    else "no2";
     fi
   #update docker to latest
   #- curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
