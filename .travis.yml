@@ -12,8 +12,8 @@ addons:
 
 env:
   matrix:
-    MONGODB_MODE=3 DOCKER_COMPOSE_VERSION=1.23.2
-    MONGODB_MODE=1 DOCKER_COMPOSE_VERSION=1.23.2
+    - MONGODB_MODE=3 DOCKER_COMPOSE_VERSION=1.23.2
+    - MONGODB_MODE=1
 
 before_install:
   - echo "update docker to latest"
@@ -37,7 +37,7 @@ before_install:
 
     if [[ $MONGODB_MODE == 1 ]]; then
     echo "install a single replica set MongoDB";
-    chmod +x /scripts/wait-for-mongo.sh;
+    chmod +x scripts/wait-for-mongo.sh;
     docker network create mongo-cluster;
     docker run --name mongo1 -p 27017:27017 -d --net mongo-cluster mongo:4.0.10 --replSet rs0;
     ./scripts/wait-for-mongo.sh;
