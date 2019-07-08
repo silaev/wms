@@ -12,7 +12,7 @@ addons:
 
 env:
   matrix:
-    - MONGODB_MODE=3 DOCKER_COMPOSE_VERSION=1.23.2
+    #- MONGODB_MODE=3 DOCKER_COMPOSE_VERSION=1.23.2
     - MONGODB_MODE=1
 
 before_install:
@@ -49,8 +49,10 @@ after_success:
 
 script:
   - if [[ $MONGODB_MODE == 1 ]]; then
+    echo "run gradlew with spring.data.mongodb.uri param"
     ./gradlew clean build -D"spring.data.mongodb.uri"="mongodb://mongo1:27017/test?replicaSet=rs0";
     else
+    echo "run gradlew"
     ./gradlew clean build;
     fi
 
