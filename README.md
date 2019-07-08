@@ -52,7 +52,7 @@ avoid inconsistent state.
 5. Optimistic Locking requires to set the WriteConcern to ACKNOWLEDGED.
 Otherwise OptimisticLockingFailureException can be silently swallowed.
 
-#### Installing a 3 replica sets MongoDB via Docker
+#### Installing a 3 replica sets MongoDB via Docker (without compose)
 - Set mongodb url in Spring boot app 
 `spring:
   data:
@@ -75,3 +75,10 @@ So run in terminal if scripts files were modifies:
 `docker exec -it mongo1  /bin/sh -c "mongo --port 50001 < /scripts/init.js"`
 
 Alternately, use Docker compose (see steps above)
+
+#### Installing a single replica sets MongoDB via Docker 
+- chmod +x wait-for-mongo.sh
+- docker network create mongo-cluster
+- docker run --name mongo -p 27017:27017 -d --net mongo-cluster mongo:4.0.10 --replSet rs0
+- ./wait-for-mongo.sh
+- docker exec -it mongo mongo --eval "printjson(rs.initiate())"
