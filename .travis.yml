@@ -49,9 +49,9 @@ after_success:
 
 script:
   - if [[ $MONGODB_MODE == 1 ]]; then
-    ./gradlew clean build -D"spring.data.mongodb.uri"="mongodb://mongo1:27017/test?replicaSet=rs0"
+    ./gradlew clean build -D"spring.data.mongodb.uri"="mongodb://mongo1:27017/test?replicaSet=rs0";
     else
-    ./gradlew clean build
+    ./gradlew clean build;
     fi
 
 before_cache:
