@@ -20,6 +20,7 @@ env:
 
 before_install:
   - chmod +x gradlew;
+  - chmod +x tools/wait-for-mongo.sh;
 
   - case "${MONGODB_MODE}" in
     3)
@@ -48,15 +49,15 @@ before_install:
     fi
 
     docker-compose -f docker-compose.yml up -d;
+    ./tools/wait-for-mongo.sh mongo3;
     docker-compose exec mongo1 /bin/sh -c "mongo --port 50001 < /scripts/init.js";
     ;;
 
     1)
     echo "*** install a single replica set MongoDB";
-    chmod +x tools/wait-for-mongo.sh;
     docker network create mongo-cluster;
     docker run --name mongo -p 27017:27017 -d --net mongo-cluster mongo:4.0.10 --replSet rs0;
-    ./tools/wait-for-mongo.sh;
+    ./tools/wait-for-mongo.sh mongo;
     docker exec -it mongo mongo --eval "printjson(rs.initiate())";
     ;;
     esac
