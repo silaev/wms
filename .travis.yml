@@ -35,10 +35,10 @@ before_install:
     echo "*** install 3 node replica set MongoDB";
 
     chmod +x tools/docker_image_tag_exists.sh;
-    if [[ "./tools/docker_image_tag_exists.sh s256/myapp v3" == "not exists" ]]; then
-    echo "*** not found image";
-    else
+    if [[ "./tools/docker_image_tag_exists.sh s256/myapp v5" == "exists" ]]; then
     echo "*** found image";
+    else
+    echo "*** not found image";
     fi
 
     docker-compose -f docker-compose.yml up -d;
