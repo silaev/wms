@@ -12,9 +12,9 @@ addons:
 
 env:
   matrix:
-    - MONGODB_MODE=3 DOCKER_COMPOSE_VERSION=1.23.2
+    - MONGO_VERSION=4.0.10 MONGODB_MODE=3 DOCKER_COMPOSE_VERSION=1.23.2
     # 0 - none, 1 - single replica set, 3 - triple replica set
-    - MONGODB_MODE=1
+    - MONGO_VERSION=4.0.10 MONGODB_MODE=1
 
 before_install:
   - chmod +x gradlew;
@@ -26,23 +26,31 @@ before_install:
     sudo apt-get update;
     sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce;
 
-    echo "update docker-compose to DOCKER_COMPOSE_VERSION";
+    echo "update docker-compose to $DOCKER_COMPOSE_VERSION";
     sudo rm /usr/local/bin/docker-compose;
     curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose;
     chmod +x docker-compose;
     sudo mv docker-compose /usr/local/bin;
 
     echo "install 3 node replica set MongoDB";
+
+    chmod +x tools/docker_image_tag_exists.sh;
+    if [[ ./tools/docker_image_tag_exists.sh s256/wms-mongo:${MONGO_VERSION} == "not exists"]]; then
+    echo "found image";
+    else
+    echo "not found image";
+    fi
+
     docker-compose -f docker-compose.yml up -d;
     docker-compose exec mongo1 /bin/sh -c "mongo --port 50001 < /scripts/init.js";
     fi
 
     if [[ $MONGODB_MODE == 1 ]]; then
     echo "install a single replica set MongoDB";
-    chmod +x scripts/wait-for-mongo.sh;
+    chmod +x tools/wait-for-mongo.sh;
     docker network create mongo-cluster;
     docker run --name mongo -p 27017:27017 -d --net mongo-cluster mongo:4.0.10 --replSet rs0;
-    ./scripts/wait-for-mongo.sh;
+    ./tools/wait-for-mongo.sh;
     docker exec -it mongo mongo --eval "printjson(rs.initiate())";
     fi
 
