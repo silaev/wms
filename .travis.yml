@@ -17,7 +17,7 @@ env:
     #- MONGO_VERSION=v3 MONGODB_MODE=1
   global:
     secure: l+S6DwQbFbtWroQWePsGMA+6IKeSIFlZerKFL3+WG7uh9rDYXV/WhJd4VKIrVD3EJsy1ehEBXhi6m/1hacWDnWby27dVV4V/JTtlmCb0SnYLQQ9TezVP+jPtHRuyCLU2gvpliFKBJZ4JpKfNT/BaSafO1ns8HfyeE3+fwTe8KdyFpW9iNNcE71deMTbIdhkcY47VBTTYP0B//hSoAw6gmGWkCasj3Gp3v50xbCcHPxiCmm0sQjjQWIHNEzVH6+WL4mb5jdA46K4DA8rjaZ0AKGOkJxKy11fI8hlen9O1GmzDLNtUEnHpKVzGm2JljHEORyrPqVQpXSEqIT9m418ObmhDZUSsbjR6+0scjY6emJ6ZOnvgU53fPCNnuD+gD+o6Qsu2l/CF+51biYTDy6E7dBF+wENxXTdg3hXj6LhKJTxpjhoeL5A9dBmt/mICa8KzDHKu9e8LQNmseDf6ZanzsQspfcW/ai/XLLZJIzRKpGgCIx+M/5Et5jzNV6qXq2njd8GsJbPqlsdadhulEuD7B60iHn3PMCDnjCaGAuskUrC39PBYCKVWAw0kguYCgo/Tt0ke6dlnyYKuL/S4zXeilCWD6IkvaVCqK6xuc6IgCZY1TVNT/96U7tgoauRNuXpWCdqW8v01x03eTjE1c6BaHOTJlOksUbrz61AD+me5A6c=
-    
+
 before_install:
   - chmod +x gradlew;
 
@@ -42,8 +42,8 @@ before_install:
     else
     echo "*** not found image s256/wms-mongo:$IMG_TAG, preparing build and push to Docker Hub...";
     echo "$DOCKER_PASSWORD" | docker login -u "s256" --password-stdin;
-    docker build -t s256/wms-mongo:{$IMG_TAG} -f Dockerfile.mongo .;
-    docker push s256/wms-mongo:{$IMG_TAG};
+    docker build -t s256/wms-mongo:${IMG_TAG} -f Dockerfile.mongo .;
+    docker push s256/wms-mongo:${IMG_TAG};
     fi
 
     docker-compose -f docker-compose.yml up -d;
