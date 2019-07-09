@@ -1,9 +1,7 @@
 version: "3.7"
 services:
   mongo1:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: s256/wms-mongo:${IMG_TAG}
     container_name: "mongo1"
     ports:
       - 50001:50001
@@ -15,9 +13,7 @@ services:
       - mongo3
 
   mongo2:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: s256/wms-mongo:${IMG_TAG}
     container_name: "mongo2"
     ports:
       - 50002:50002
@@ -26,9 +22,7 @@ services:
       - mongonet
 
   mongo3:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: s256/wms-mongo:${IMG_TAG}
     container_name: "mongo3"
     ports:
       - 50003:50003

@@ -61,10 +61,20 @@ dependencies {
     //compile group: 'com.vladmihalcea', name: 'db-testutil', version: '0.0.1'
 }
 
-test {
-    useJUnitPlatform()
+tasks.withType(Test) { Test task ->
+    task.useJUnitPlatform {
 
-    maxParallelForks = 2
+    }
+
+    task.systemProperties(
+            System.properties.findAll {
+                it.key.toString().startsWith("spring")
+            }
+    )
+    println("Test sys props: " + task.systemProperties)
+
+
+    task.maxParallelForks = 2
     testLogging.showStandardStreams = true
     testLogging.exceptionFormat = 'full'
 
@@ -84,7 +94,7 @@ jacocoTestReport {
 
         xml.destination file("${buildDir}/reports/jacoco/report.xml")
     }
-    
+
     afterEvaluate {
         afterEvaluate {
             classDirectories.setFrom(
