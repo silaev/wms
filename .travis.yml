@@ -12,9 +12,12 @@ addons:
 
 env:
   matrix:
-    - MONGO_VERSION=v3 MONGODB_MODE=3 DOCKER_COMPOSE_VERSION=1.23.2
+    - IMG_TAG=v1 MONGODB_MODE=3 DOCKER_COMPOSE_VERSION=1.23.2
     # 0 - none, 1 - single replica set, 3 - triple replica set
     #- MONGO_VERSION=v3 MONGODB_MODE=1
+  global:
+    - secure: oxsPRvg3lLLoQh3glohD98r/6Om98DttN9rEaHny/Z0AJ0A8Bs/YSr1L21pUwY5cfjfeDeozT22grNi/ZvYPn2dc0VcgrnmF7A8IiCGMhlCJISskzELygp3Tgy4kYeAxVuuNSLwSY4V3KNvA0bf2CszhQ3eegTEBJfn3VOysuVUn1KeKDbV9el+K8XZaOFqT2vX2CBjHHTTRZSwRHfgaPTdgKGSVO+q1mx1g68Lb0JmnEQqBFFNhvvYmmI2rbdIk82ivVRwXabOdK4xjH7m4Zz7JFhBplB+9bykM09X4jseFj8EQ8eUP95GzNAPPFEYXZIeBoQ/g3n//7uN32++V/eg/dpHW4Cx/hMoZz3w+/khRsATO4DiUh8ZgfHiYyUIdDsvpZ9shqgztKXFy7qH6bpXWlKiJChmSXdekMen+2UwUb1K5y8IG1qy1WTkvTo7GVxrtk7X02U7JwJnLXt5wHOz+1g/wSeW7vO28Kkd9Rj2lNxJovemCWCYjLZQKZgwxLdHMzclVGBRUb14yjoBIiS7Ejn02okUAHlQP6xl1XZuXQ8kA+dvVKSQGQNuNLoRvPLrXAAydhaqiR4GYjBm5c0cJ9/KzaPT8XqA6HSBLtf+9/Pl5TZGxHWxCbyIUGopdo9V7u4cmxoPQ2SaKIGBZyzist/EzXDxtbvUJgwD8KgY=
+    - secure: qMTzuymObnML29wNnNvAgQYz+c6HyTKVXDHVcCJbhv873y4bE4S/lQ9gF3gHiu5lJONR7idiio6yKW7ECdP1JNGg9lHVZAOCY7/cVhY75SScG0kv47mYkbx6IFKi+KeC5gfdYyTLEkZ/sWcZxO2Mmzx3Q4JvyJZ5vwCOeITfwOs+DuAmXlDNPVv7mQMFzLJmTJqd+F6aNUZiUaX2p/ELP+fF5UcmDgrSfDvIioeKV/ufqV/ZI3xNFu9+c/43ZW0+Vl57Wsx1gK74quDewsev0h8S4kWAE4XFZWz+DBJ0XZbUDCFzRoTJuxLnXvtkddTRGEyDDml+6SRf5Ro4DIxUbCQixpKAwzK0kSRwF4AO8iEpzK1RcVNYcZI9Y+G14fEg89kirZUrI/i5xewNP+359+Imebhmaezbj4ajd/NkniHlPj06uQNJJXg2n8w93LCMjhnX/qXWFsgfpmsLofn8/KE9g69xgfMspOuLV1wFgqTku+Yg09D763YUwml/0SzDF4Mc5l2bnVCP7uoZzbzmccHhaJrscLtFbG+VUA9F7aalqK3qfjU07yznbBtIgwK8oije3KLS4AHOOfU1VizPfOuksTz1lSQYQ7YCOixOMGItrh3MovDFekvFkGPfkRqz6gu9Yh1izFsKdTzgb2EcUv7eImjJytkaK8duJ56zzQQ=
 
 before_install:
   - chmod +x gradlew;
@@ -35,10 +38,13 @@ before_install:
     echo "*** install 3 node replica set MongoDB";
 
     chmod +x tools/docker_image_tag_exists.sh;
-    if [[ $(./tools/docker_image_tag_exists.sh s256/myapp $MONGO_VERSION) == "true" ]]; then
-    echo "*** found image";
+    if [[ $(./tools/docker_image_tag_exists.sh s256/wms-mongo $IMG_TAG) == "true" ]]; then
+    echo "*** found image s256/wms-mongo:$IMG_TAG";
     else
-    echo "*** not found image";
+    echo "*** not found image s256/wms-mongo:$IMG_TAG, preparing build and push to Docker Hub...";
+    echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin;
+    docker build -t s256/wms-mongo:{$IMG_TAG} -f Dockerfile.mongo .;
+    docker push s256/wms-mongo:{$IMG_TAG};
     fi
 
     docker-compose -f docker-compose.yml up -d;
