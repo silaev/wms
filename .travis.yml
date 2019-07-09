@@ -20,25 +20,25 @@ before_install:
   - chmod +x gradlew;
 
   - if [[ $MONGODB_MODE == 3 ]]; then
-    echo "update docker to latest";
+    echo "*** update docker to latest";
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -;
     sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable";
     sudo apt-get update;
     sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce;
 
-    echo "update docker-compose to DOCKER_COMPOSE_VERSION";
+    echo "*** update docker-compose to DOCKER_COMPOSE_VERSION";
     sudo rm /usr/local/bin/docker-compose;
     curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose;
     chmod +x docker-compose;
     sudo mv docker-compose /usr/local/bin;
 
-    echo "install 3 node replica set MongoDB";
+    echo "*** install 3 node replica set MongoDB";
 
     chmod +x tools/docker_image_tag_exists.sh;
-    if [ "./tools/docker_image_tag_exists.sh s256/wms-mongo ${MONGO_VERSION}" == "not exists"]; then
-    echo "not found image";
+    if [[ "./tools/docker_image_tag_exists.sh s256/wms-mongo ${MONGO_VERSION}" == "not exists"]]; then
+    echo "*** not found image";
     else
-    echo "found image";
+    echo "*** found image";
     fi
 
     docker-compose -f docker-compose.yml up -d;
@@ -46,7 +46,7 @@ before_install:
     fi
 
     if [[ $MONGODB_MODE == 1 ]]; then
-    echo "install a single replica set MongoDB";
+    echo "*** install a single replica set MongoDB";
     chmod +x tools/wait-for-mongo.sh;
     docker network create mongo-cluster;
     docker run --name mongo -p 27017:27017 -d --net mongo-cluster mongo:4.0.10 --replSet rs0;
@@ -56,16 +56,16 @@ before_install:
 
 after_success:
   - if [ $TRAVIS_BRANCH == 'master' ]; then
-    echo "send stats to codecov";
+    echo "*** send stats to codecov";
     bash <(curl -s https://codecov.io/bash);
     fi
 
 script:
   - if [[ $MONGODB_MODE == 1 ]]; then
-    echo "run gradlew with spring.data.mongodb.uri param";
+    echo "*** run gradlew with spring.data.mongodb.uri param";
     ./gradlew clean build -D"spring.data.mongodb.uri"="mongodb://localhost:27017/test";
     else
-    echo "run gradlew";
+    echo "*** run gradlew";
     ./gradlew clean build;
     fi
 
