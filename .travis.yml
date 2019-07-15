@@ -11,7 +11,9 @@ addons:
     - mongo3
   apt:
     packages:
+      - pgp
       - pass
+
 env:
   matrix:
     # 0 - none, 1 - single replica set, 3 - triple replica set
