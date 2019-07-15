@@ -47,7 +47,7 @@ before_install:
     else
     echo "*** not found image s256/wms-mongo:$IMG_TAG, preparing build and push to Docker Hub...";
     chmod +x tools/pass_init.sh;
-    ./tools/pass_init.sh $GPG_PASSPHRASE;
+    ./tools/pass_init.sh ${GPG_PASSPHRASE};
     echo "$DOCKER_PASSWORD" | docker login -u "s256" --password-stdin;
     docker build --build-arg MONGO_VERSION=${IMG_TAG} -t s256/wms-mongo:${IMG_TAG} -f Dockerfile.mongo .;
     docker push s256/wms-mongo:${IMG_TAG};
