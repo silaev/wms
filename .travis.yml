@@ -12,9 +12,9 @@ addons:
 
 env:
   matrix:
-    - IMG_TAG=v1 MONGODB_MODE=3 DOCKER_COMPOSE_VERSION=1.23.2
     # 0 - none, 1 - single replica set, 3 - triple replica set
-    - MONGO_VERSION=v3 MONGODB_MODE=1
+    - MONGODB_MODE=3 IMG_TAG=4.1.13 DOCKER_COMPOSE_VERSION=1.23.2
+    - MONGODB_MODE=1 IMG_TAG=4.1.13
   global:
     secure: l+S6DwQbFbtWroQWePsGMA+6IKeSIFlZerKFL3+WG7uh9rDYXV/WhJd4VKIrVD3EJsy1ehEBXhi6m/1hacWDnWby27dVV4V/JTtlmCb0SnYLQQ9TezVP+jPtHRuyCLU2gvpliFKBJZ4JpKfNT/BaSafO1ns8HfyeE3+fwTe8KdyFpW9iNNcE71deMTbIdhkcY47VBTTYP0B//hSoAw6gmGWkCasj3Gp3v50xbCcHPxiCmm0sQjjQWIHNEzVH6+WL4mb5jdA46K4DA8rjaZ0AKGOkJxKy11fI8hlen9O1GmzDLNtUEnHpKVzGm2JljHEORyrPqVQpXSEqIT9m418ObmhDZUSsbjR6+0scjY6emJ6ZOnvgU53fPCNnuD+gD+o6Qsu2l/CF+51biYTDy6E7dBF+wENxXTdg3hXj6LhKJTxpjhoeL5A9dBmt/mICa8KzDHKu9e8LQNmseDf6ZanzsQspfcW/ai/XLLZJIzRKpGgCIx+M/5Et5jzNV6qXq2njd8GsJbPqlsdadhulEuD7B60iHn3PMCDnjCaGAuskUrC39PBYCKVWAw0kguYCgo/Tt0ke6dlnyYKuL/S4zXeilCWD6IkvaVCqK6xuc6IgCZY1TVNT/96U7tgoauRNuXpWCdqW8v01x03eTjE1c6BaHOTJlOksUbrz61AD+me5A6c=
 
@@ -30,7 +30,7 @@ before_install:
     sudo apt-get update;
     sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce;
 
-    echo "*** update docker-compose to DOCKER_COMPOSE_VERSION";
+    echo "*** update docker-compose to $DOCKER_COMPOSE_VERSION";
     sudo rm /usr/local/bin/docker-compose;
     curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose;
     chmod +x docker-compose;
@@ -44,7 +44,7 @@ before_install:
     else
     echo "*** not found image s256/wms-mongo:$IMG_TAG, preparing build and push to Docker Hub...";
     echo "$DOCKER_PASSWORD" | docker login -u "s256" --password-stdin;
-    docker build -t s256/wms-mongo:${IMG_TAG} -f Dockerfile.mongo .;
+    docker build --build-arg MONGO_VERSION=${IMG_TAG} -t s256/wms-mongo:${IMG_TAG} -f Dockerfile.mongo .;
     docker push s256/wms-mongo:${IMG_TAG};
     fi
 
@@ -56,7 +56,7 @@ before_install:
     1)
     echo "*** install a single replica set MongoDB";
     docker network create mongo-cluster;
-    docker run --name mongo -p 27017:27017 -d --net mongo-cluster mongo:4.0.10 --replSet rs0;
+    docker run --name mongo -p 27017:27017 -d --net mongo-cluster mongo:${IMG_TAG} --replSet rs0;
     ./tools/wait-for-mongo.sh mongo;
     docker exec -it mongo mongo --eval "printjson(rs.initiate())";
     ;;
@@ -70,10 +70,10 @@ after_success:
 
 script:
   - if [[ $MONGODB_MODE == 1 ]]; then
-    echo "*** run gradlew with spring.data.mongodb.uri param";
+    echo "*** run gradlew with a param spring.data.mongodb.uri";
     ./gradlew clean build -D"spring.data.mongodb.uri"="mongodb://localhost:27017/test";
     else
-    echo "*** run gradlew";
+    echo "*** run gradlew without any params";
     ./gradlew clean build;
     fi
 
