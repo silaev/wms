@@ -1,5 +1,7 @@
 #!/bin/sh
 
+echo "works in bionic, but doesn't in xenial trusty. so employ it once travis supports bionic"
+
 curl -fsSL "https://github.com/docker/docker-credential-helpers/releases/download/v0.6.0/docker-credential-pass-v0.6.0-amd64.tar.gz" | tar xv
 chmod +x docker-credential-pass
 cat >g-key <<EOF

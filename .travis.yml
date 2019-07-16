@@ -4,6 +4,8 @@ jdk: openjdk11
 
 services: docker
 
+dist: xenial
+
 addons:
   hosts:
     - mongo1
