@@ -29,7 +29,6 @@ before_install:
 
   - case "${MONGODB_MODE}" in
     3)
-
     echo "*** update docker-compose to $DOCKER_COMPOSE_VERSION";
     sudo rm /usr/local/bin/docker-compose;
     curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose;
@@ -43,8 +42,6 @@ before_install:
     echo "*** found image s256/wms-mongo:$IMG_TAG";
     else
     echo "*** not found image s256/wms-mongo:$IMG_TAG, preparing build and push to Docker Hub...";
-    chmod +x tools/pass_init.sh;
-    ./tools/pass_init.sh 55;
     echo "$DOCKER_PASSWORD" | docker login -u "s256" --password-stdin;
     docker build --build-arg MONGO_VERSION=${IMG_TAG} -t s256/wms-mongo:${IMG_TAG} -f Dockerfile.mongo .;
     docker push s256/wms-mongo:${IMG_TAG};
