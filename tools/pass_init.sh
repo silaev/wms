@@ -3,14 +3,14 @@
 curl -fsSL "https://github.com/docker/docker-credential-helpers/releases/download/v0.6.0/docker-credential-pass-v0.6.0-amd64.tar.gz" | tar xv
 sleep 5
 chmod +x docker-credential-pass
-cat >key <<EOF
+cat >g-key <<EOF
      %echo Generating a basic OpenPGP key
      Key-Type: DSA
      Key-Length: 1024
      Subkey-Type: ELG-E
      Subkey-Length: 1024
      Name-Real: s256
-     Name-Comment: with stupid passphrase
+     Name-Comment: with passphrase
      Name-Email: s256@gmail.com
      Expire-Date: 0
      Passphrase: $1
@@ -19,4 +19,5 @@ cat >key <<EOF
      %echo done
 EOF
 
-gpg --batch --generate-key key; pass init $(gpg -k | awk 'NR==4')
+gpg --batch --generate-key g-key
+pass init $(gpg -k | awk 'NR==4')
