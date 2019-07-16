@@ -11,6 +11,10 @@ services:
     depends_on:
       - mongo2
       - mongo3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
 
   mongo2:
     image: s256/wms-mongo:${IMG_TAG}
@@ -20,6 +24,10 @@ services:
     command: mongod --replSet docker-rs --port 50002
     networks:
       - mongonet
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
 
   mongo3:
     image: s256/wms-mongo:${IMG_TAG}
@@ -29,6 +37,10 @@ services:
     command: mongod --replSet docker-rs --port 50003
     networks:
       - mongonet
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
 
 networks:
   mongonet:

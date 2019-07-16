@@ -4,19 +4,26 @@ jdk: openjdk11
 
 services: docker
 
+dist: xenial
+
 addons:
   hosts:
     - mongo1
     - mongo2
     - mongo3
+  apt:
+    packages:
+      - pass
+      - docker-ce
 
 env:
   matrix:
-    - IMG_TAG=v1 MONGODB_MODE=3 DOCKER_COMPOSE_VERSION=1.23.2
     # 0 - none, 1 - single replica set, 3 - triple replica set
-    - MONGO_VERSION=v3 MONGODB_MODE=1
+    - MONGODB_MODE=3 IMG_TAG=4.0.10 DOCKER_COMPOSE_VERSION=1.23.2
+    - MONGODB_MODE=1 IMG_TAG=4.0.10
   global:
-    secure: l+S6DwQbFbtWroQWePsGMA+6IKeSIFlZerKFL3+WG7uh9rDYXV/WhJd4VKIrVD3EJsy1ehEBXhi6m/1hacWDnWby27dVV4V/JTtlmCb0SnYLQQ9TezVP+jPtHRuyCLU2gvpliFKBJZ4JpKfNT/BaSafO1ns8HfyeE3+fwTe8KdyFpW9iNNcE71deMTbIdhkcY47VBTTYP0B//hSoAw6gmGWkCasj3Gp3v50xbCcHPxiCmm0sQjjQWIHNEzVH6+WL4mb5jdA46K4DA8rjaZ0AKGOkJxKy11fI8hlen9O1GmzDLNtUEnHpKVzGm2JljHEORyrPqVQpXSEqIT9m418ObmhDZUSsbjR6+0scjY6emJ6ZOnvgU53fPCNnuD+gD+o6Qsu2l/CF+51biYTDy6E7dBF+wENxXTdg3hXj6LhKJTxpjhoeL5A9dBmt/mICa8KzDHKu9e8LQNmseDf6ZanzsQspfcW/ai/XLLZJIzRKpGgCIx+M/5Et5jzNV6qXq2njd8GsJbPqlsdadhulEuD7B60iHn3PMCDnjCaGAuskUrC39PBYCKVWAw0kguYCgo/Tt0ke6dlnyYKuL/S4zXeilCWD6IkvaVCqK6xuc6IgCZY1TVNT/96U7tgoauRNuXpWCdqW8v01x03eTjE1c6BaHOTJlOksUbrz61AD+me5A6c=
+    - secure: l+S6DwQbFbtWroQWePsGMA+6IKeSIFlZerKFL3+WG7uh9rDYXV/WhJd4VKIrVD3EJsy1ehEBXhi6m/1hacWDnWby27dVV4V/JTtlmCb0SnYLQQ9TezVP+jPtHRuyCLU2gvpliFKBJZ4JpKfNT/BaSafO1ns8HfyeE3+fwTe8KdyFpW9iNNcE71deMTbIdhkcY47VBTTYP0B//hSoAw6gmGWkCasj3Gp3v50xbCcHPxiCmm0sQjjQWIHNEzVH6+WL4mb5jdA46K4DA8rjaZ0AKGOkJxKy11fI8hlen9O1GmzDLNtUEnHpKVzGm2JljHEORyrPqVQpXSEqIT9m418ObmhDZUSsbjR6+0scjY6emJ6ZOnvgU53fPCNnuD+gD+o6Qsu2l/CF+51biYTDy6E7dBF+wENxXTdg3hXj6LhKJTxpjhoeL5A9dBmt/mICa8KzDHKu9e8LQNmseDf6ZanzsQspfcW/ai/XLLZJIzRKpGgCIx+M/5Et5jzNV6qXq2njd8GsJbPqlsdadhulEuD7B60iHn3PMCDnjCaGAuskUrC39PBYCKVWAw0kguYCgo/Tt0ke6dlnyYKuL/S4zXeilCWD6IkvaVCqK6xuc6IgCZY1TVNT/96U7tgoauRNuXpWCdqW8v01x03eTjE1c6BaHOTJlOksUbrz61AD+me5A6c=
+    - secure: jKJRDjMtzg4ABHlCdIhLhB0nTVl+Qx/rlUucG+LVZlTzECzBdbK+LAVGcgXWXzo4pmVdciBwaVKSXJWDm3TKiCRhXap0T42hg1bN6pVicOpr4hA0O4qBzPMHlf9PGHtDQm/oeOTDsqwPOxTTsf/3j0X46qKLVN0yzymB4BEaTg44LpF+VtPZIJ1YLVEh2JN02yOdMGkVNgXMNm9m5NyBhFx6pft10JLicOEo0ZqvP1EJ7nWnSzrE3wp+ElAwmg/JEKyylgiCcAAlj7iamvbYWtlGq8eXyhpa3SF5j0ovDIaygpEGvSegnXOlx5eWrtdxAK7tTdX+SNICyFiMtGry2ylfST5vT4p5IcGnQTBCUTVjMoL/ha4S3eaZKIb2pCeKxf7p+AMOJK9o94YdyTcE4ou6DR+ecIoR0ifVz7iKE/AD+IE1Kj+ZbgYmOuRscYrV+m9nlqNpxWjVxnkk5uEnMo7glH8j1Zmg6jPqYOBesaao2BK3lMFZmc6yAg+9VqraptM2QWu/J+dmr6heeUQ9/FIpg9JXJCfOulHS0qR5nNJHDt1r/hZnnvon5z2I/tFNhE/wHVHh/nZjgEUSvsGXVTsVqULUzgxfBNEBjQu1wp8rs4j4DxnzmBOArFJ9UqxCGWw4RVJQqpmCH4v3D5LnqWi5wBAngMnPFvkY82BZTr8=
 
 before_install:
   - chmod +x gradlew;
@@ -24,13 +31,7 @@ before_install:
 
   - case "${MONGODB_MODE}" in
     3)
-    echo "*** update docker to latest";
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -;
-    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable";
-    sudo apt-get update;
-    sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce;
-
-    echo "*** update docker-compose to DOCKER_COMPOSE_VERSION";
+    echo "*** update docker-compose to $DOCKER_COMPOSE_VERSION";
     sudo rm /usr/local/bin/docker-compose;
     curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose;
     chmod +x docker-compose;
@@ -44,7 +45,7 @@ before_install:
     else
     echo "*** not found image s256/wms-mongo:$IMG_TAG, preparing build and push to Docker Hub...";
     echo "$DOCKER_PASSWORD" | docker login -u "s256" --password-stdin;
-    docker build -t s256/wms-mongo:${IMG_TAG} -f Dockerfile.mongo .;
+    docker build --build-arg MONGO_VERSION=${IMG_TAG} -t s256/wms-mongo:${IMG_TAG} -f Dockerfile.mongo .;
     docker push s256/wms-mongo:${IMG_TAG};
     fi
 
@@ -56,7 +57,7 @@ before_install:
     1)
     echo "*** install a single replica set MongoDB";
     docker network create mongo-cluster;
-    docker run --name mongo -p 27017:27017 -d --net mongo-cluster mongo:4.0.10 --replSet rs0;
+    docker run --name mongo -p 27017:27017 -d --net mongo-cluster mongo:${IMG_TAG} --replSet rs0;
     ./tools/wait-for-mongo.sh mongo;
     docker exec -it mongo mongo --eval "printjson(rs.initiate())";
     ;;
@@ -70,10 +71,10 @@ after_success:
 
 script:
   - if [[ $MONGODB_MODE == 1 ]]; then
-    echo "*** run gradlew with spring.data.mongodb.uri param";
+    echo "*** run gradlew with a param spring.data.mongodb.uri";
     ./gradlew clean build -D"spring.data.mongodb.uri"="mongodb://localhost:27017/test";
     else
-    echo "*** run gradlew";
+    echo "*** run gradlew without any params";
     ./gradlew clean build;
     fi
 
