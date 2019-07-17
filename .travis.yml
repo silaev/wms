@@ -4,7 +4,7 @@ jdk: openjdk11
 
 services: docker
 
-dist: xenial
+#dist: xenial
 
 addons:
   hosts:
@@ -13,7 +13,7 @@ addons:
     - mongo3
   apt:
     packages:
-      - pass
+      #- pass
       - docker-ce
 
 env:

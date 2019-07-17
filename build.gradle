@@ -1,6 +1,8 @@
 buildscript {
     ext {
         springBootVersion = '2.1.6.RELEASE'
+        mockitoVersion = '3.0.0'
+        junitVersion = '5.3.1'
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
@@ -31,6 +33,8 @@ springBoot {
     mainClassName = 'com.silaev.wms.WmsApplication'
 }
 
+ext['mockito.version'] = "${mockitoVersion}"
+
 dependencies {
     implementation('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
     implementation('org.springframework.boot:spring-boot-starter-validation')
@@ -48,10 +52,10 @@ dependencies {
     testImplementation('io.projectreactor:reactor-test')
     testImplementation('org.springframework.security:spring-security-test')
 
-    testCompile('org.junit.jupiter:junit-jupiter-params:5.3.1')
-    testRuntime('org.junit.jupiter:junit-jupiter-engine:5.3.1')
+    testCompile("org.junit.jupiter:junit-jupiter-params:${junitVersion}")
+    testRuntime("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 
-    testCompile('org.mockito:mockito-junit-jupiter:2.23.0')
+    testCompile("org.mockito:mockito-junit-jupiter:${mockitoVersion}")
 
     //compile group: 'io.projectreactor.tools', name: 'blockhound-junit-platform', version: '1.0.0.M4'
     //testRuntime group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.4.2'
