@@ -1,0 +1,32 @@
+# docker build --build-arg MONGO_VERSION=4.1.13 --build-arg SSHPASS= -t s256/wms-mongo-ssh-server:4.1.13 -f Dockerfile.mongo-ssh-server .
+# docker run --name mongo1 -d --net mongo-cluster -p 50001:50001 s256/wms-mongo-ssh-server:4.1.13 mongod --replSet docker-rs --port 50001
+
+ARG MONGO_VERSION=4.0.10
+ARG SSHPASS
+
+FROM mongo:$MONGO_VERSION
+
+COPY scripts/ /scripts/
+
+RUN apt-get update && apt-get install -y \
+  openssh-server \
+  nmap \
+  dos2unix
+
+RUN dos2unix scripts/**
+
+COPY tools/ssh_server_init.sh /etc/init.d/ssh_server_init.sh
+
+RUN chmod +x /etc/init.d/ssh_server_init.sh
+
+RUN update-rc.d ssh_server_init.sh defaults
+
+ARG SSHPASS
+RUN useradd --create-home --shell /bin/bash --groups sudo s256 \
+    && echo "s256:$SSHPASS" | /usr/sbin/chpasswd
+
+LABEL version=$MONGO_VERSION
+
+EXPOSE 27017
+
+CMD ["mongod"]

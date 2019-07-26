@@ -1,0 +1,17 @@
+#docker build -t s256/wms-ssh-client:4.1.13 -f Dockerfile.ssh-client .
+#docker run --name cln --net mongo-cluster -it s256/wms-ssh-client:4.1.13
+
+#Run to completion ssh client
+
+FROM ubuntu:bionic
+
+ENV TERM linux
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN apt-get update && apt-get install -y ssh expect nmap
+
+COPY tools/ /tools/
+RUN find /tools/ -name "*.sh" -exec chmod +x {} +
+
+CMD ["/bin/bash"]
+                                                                                                                                                                                             #C
