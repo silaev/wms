@@ -29,7 +29,7 @@ env:
 before_install:
   - chmod +x gradlew;
 
-  - if [[ $MONGODB_MODE == 0 ] || [ $MONGODB_MODE == 3 ] ]; then
+  - if [[ $MONGODB_MODE == 0 ] || [ $MONGODB_MODE == 3 ]]; then
     echo "*** update docker-compose to $DOCKER_COMPOSE_VERSION";
     sudo rm /usr/local/bin/docker-compose;
     curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose;
@@ -110,7 +110,7 @@ script:
     ./gradlew clean build;
     ;;
     esac
-  
+
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
