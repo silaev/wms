@@ -16,10 +16,11 @@ RUN apt-get update && apt-get install -y \
 RUN dos2unix scripts/**
 
 COPY tools/ssh_server_init.sh /etc/init.d/ssh_server_init.sh
-
 RUN chmod +x /etc/init.d/ssh_server_init.sh
-
 RUN update-rc.d ssh_server_init.sh defaults
+
+COPY tools/ssh_mongo_healthcheck.sh /tools/ssh_mongo_healthcheck.sh
+RUN chmod +x /tools/ssh_mongo_healthcheck.sh
 
 ARG SSHPASS
 RUN useradd --create-home --shell /bin/bash --groups sudo s256 \

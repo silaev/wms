@@ -1,0 +1,12 @@
+/build/
+/.gradle/
+/DiskStore/
+/classes/
+/target/
+/uploads/
+/out/
+/.idea/
+.git
+*.iml
+*.log
+/logs/

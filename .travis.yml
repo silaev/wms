@@ -18,7 +18,8 @@ addons:
 
 env:
   matrix:
-    # 0 - none, 1 - single replica set, 3 - triple replica set
+    # 0 - do it in compose, 1 - single replica set, 3 - triple replica set
+    - MONGODB_MODE=0 IMG_TAG=4.0.10 DOCKER_COMPOSE_VERSION=1.23.2
     - MONGODB_MODE=3 IMG_TAG=4.0.10 DOCKER_COMPOSE_VERSION=1.23.2
     - MONGODB_MODE=1 IMG_TAG=4.0.10
   global:
@@ -27,27 +28,51 @@ env:
 
 before_install:
   - chmod +x gradlew;
-  - chmod +x tools/wait-for-mongo.sh;
 
-  - case "${MONGODB_MODE}" in
-    3)
+  - if [[ $MONGODB_MODE == 0 ] || [ $MONGODB_MODE == 3 ] ]; then
     echo "*** update docker-compose to $DOCKER_COMPOSE_VERSION";
     sudo rm /usr/local/bin/docker-compose;
     curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose;
     chmod +x docker-compose;
     sudo mv docker-compose /usr/local/bin;
 
-    echo "*** install 3 node replica set MongoDB";
+    echo "$DOCKER_PASSWORD" | docker login -u "s256" --password-stdin;
 
     chmod +x tools/docker_image_tag_exists.sh;
+
     if [[ $(./tools/docker_image_tag_exists.sh s256/wms-mongo $IMG_TAG) == "true" ]]; then
     echo "*** found image s256/wms-mongo:$IMG_TAG";
     else
     echo "*** not found image s256/wms-mongo:$IMG_TAG, preparing build and push to Docker Hub...";
-    echo "$DOCKER_PASSWORD" | docker login -u "s256" --password-stdin;
     docker build --build-arg MONGO_VERSION=${IMG_TAG} -t s256/wms-mongo:${IMG_TAG} -f Dockerfile.mongo .;
     docker push s256/wms-mongo:${IMG_TAG};
     fi
+    fi
+
+  - case "${MONGODB_MODE}" in
+    0)
+    echo "*** install everything in docker compose";
+
+    if [[ $(./tools/docker_image_tag_exists.sh s256/mongo-ssh-server $IMG_TAG) == "true" ]]; then
+    echo "*** found image s256/mongo-ssh-server:$IMG_TAG";
+    else
+    echo "*** not found image s256/mongo-ssh-server:$IMG_TAG, preparing build and push to Docker Hub...";
+    docker build --build-arg MONGO_VERSION=${IMG_TAG} --build-arg SSHPASS=${SSHPASS} -t s256/mongo-ssh-server:${IMG_TAG} -f Dockerfile.mongo-ssh-server .;
+    docker push s256/mongo-ssh-server:${IMG_TAG};
+    fi
+
+    if [[ $(./tools/docker_image_tag_exists.sh s256/ssh-client $IMG_TAG) == "true" ]]; then
+    echo "*** found image s256/ssh-client:$IMG_TAG";
+    else
+    echo "*** not found image s256/ssh-client:$IMG_TAG, preparing build and push to Docker Hub...";
+    docker build -t s256/ssh-client:${IMG_TAG} -f Dockerfile.ssh-client .;
+    docker push s256/ssh-client:${IMG_TAG};
+    fi
+
+    3)
+    chmod +x tools/wait-for-mongo.sh;
+
+    echo "*** install 3 node replica set MongoDB";
 
     docker-compose -f docker-compose.yml up -d;
     ./tools/wait-for-mongo.sh mongo3;
@@ -70,14 +95,22 @@ after_success:
     fi
 
 script:
-  - if [[ $MONGODB_MODE == 1 ]]; then
+  - case "${MONGODB_MODE}" in
+    0)
+    echo "*** run gradlew without any params";
+    ./gradlew clean build -x test;
+    docker-compose -f docker-compose-init-mongo-rs.yml up -d;
+
+    1)
     echo "*** run gradlew with a param spring.data.mongodb.uri";
     ./gradlew clean build -D"spring.data.mongodb.uri"="mongodb://localhost:27017/test";
-    else
+
+    3)
     echo "*** run gradlew without any params";
     ./gradlew clean build;
-    fi
-
+    ;;
+    esac
+  
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/

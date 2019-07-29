@@ -1,14 +1,27 @@
 version: "3.7"
 services:
-  init:
-    container_name: "init"
+  run-it:
+    build:
+      context: .
+      dockerfile: Dockerfile.run-it
+    container_name: "run-it"
+    networks:
+      - mongonet
+    depends_on:
+      - mongo1
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+
+  init-mongo-rs:
+    container_name: "init-mongo-rs"
     image: s256/wms-ssh-client:${IMG_TAG}
     networks:
       - mongonet
     depends_on:
       - mongo1
     command: ["sh", "-c", "./tools/wait-for-ssh.sh mongo1; ssh-keygen -t rsa -N '' -f ~/.ssh/id_rsa; ./tools/exp_promt_yes.sh ssh-copy-id s256 mongo1 ${SSHPASS}; ssh s256@mongo1 'mongo --port 50001 < /scripts/init.js'"]
-    restart: "no"
     logging:
       driver: "json-file"
       options:
@@ -27,7 +40,7 @@ services:
       - mongo2
       - mongo3
     healthcheck:
-      test: ["CMD-SHELL", "service --status-all"]
+      test: ["CMD-SHELL", "./tools/ssh_mongo_healthcheck.sh"]
       interval: 20s
       timeout: 3s
       retries: 2
