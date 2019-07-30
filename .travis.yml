@@ -101,10 +101,12 @@ script:
     echo "*** run gradlew without any params";
     ./gradlew clean build -x test;
     docker-compose -f docker-compose-init-mongo-rs.yml up -d;
+    ;;
 
     1)
     echo "*** run gradlew with a param spring.data.mongodb.uri";
     ./gradlew clean build -D"spring.data.mongodb.uri"="mongodb://localhost:27017/test";
+    ;;
 
     3)
     echo "*** run gradlew without any params";
