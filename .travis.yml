@@ -53,20 +53,20 @@ before_install:
     0)
     echo "*** install everything in docker compose";
 
-    if [[ $(./tools/docker_image_tag_exists.sh s256/mongo-ssh-server $IMG_TAG) == "true" ]]; then
-    echo "*** found image s256/mongo-ssh-server:$IMG_TAG";
+    if [[ $(./tools/docker_image_tag_exists.sh s256/wms-mongo-ssh-server $IMG_TAG) == "true" ]]; then
+    echo "*** found image s256/wms-mongo-ssh-server:$IMG_TAG";
     else
-    echo "*** not found image s256/mongo-ssh-server:$IMG_TAG, preparing build and push to Docker Hub...";
-    docker build --build-arg MONGO_VERSION=${IMG_TAG} --build-arg SSHPASS=${SSHPASS} -t s256/mongo-ssh-server:${IMG_TAG} -f Dockerfile.mongo-ssh-server .;
-    docker push s256/mongo-ssh-server:${IMG_TAG};
+    echo "*** not found image s256/wms-mongo-ssh-server:$IMG_TAG, preparing build and push to Docker Hub...";
+    docker build --build-arg MONGO_VERSION=${IMG_TAG} --build-arg SSHPASS=${SSHPASS} -t s256/wms-mongo-ssh-server:${IMG_TAG} -f Dockerfile.mongo-ssh-server .;
+    docker push s256/wms-mongo-ssh-server:${IMG_TAG};
     fi
 
-    if [[ $(./tools/docker_image_tag_exists.sh s256/ssh-client $IMG_TAG) == "true" ]]; then
-    echo "*** found image s256/ssh-client:$IMG_TAG";
+    if [[ $(./tools/docker_image_tag_exists.sh s256/wms-ssh-client $IMG_TAG) == "true" ]]; then
+    echo "*** found image s256/wms-ssh-client:$IMG_TAG";
     else
-    echo "*** not found image s256/ssh-client:$IMG_TAG, preparing build and push to Docker Hub...";
-    docker build -t s256/ssh-client:${IMG_TAG} -f Dockerfile.ssh-client .;
-    docker push s256/ssh-client:${IMG_TAG};
+    echo "*** not found image s256/wms-ssh-client:$IMG_TAG, preparing build and push to Docker Hub...";
+    docker build -t s256/wms-ssh-client:${IMG_TAG} -f Dockerfile.ssh-client .;
+    docker push s256/wms-ssh-client:${IMG_TAG};
     fi
     ;;
 
