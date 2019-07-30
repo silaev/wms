@@ -18,9 +18,11 @@ addons:
 
 env:
   matrix:
-    # 0 - do it in compose, 1 - single replica set, 3 - triple replica set
-    #- MONGODB_MODE=0 IMG_TAG=4.0.10 DOCKER_COMPOSE_VERSION=1.23.2
-    #- MONGODB_MODE=3 IMG_TAG=4.0.10 DOCKER_COMPOSE_VERSION=1.23.2
+    # 0 - triple replica set and init in compose (no need for adding hosts)
+    - MONGODB_MODE=0 IMG_TAG=4.0.10 DOCKER_COMPOSE_VERSION=1.23.2
+    # 3 - triple replica set and ext init (needs adding hosts)
+    - MONGODB_MODE=3 IMG_TAG=4.0.10 DOCKER_COMPOSE_VERSION=1.23.2
+    # 1 - single replica set (needs adding hosts)
     - MONGODB_MODE=1 IMG_TAG=4.0.10
   global:
     - secure: l+S6DwQbFbtWroQWePsGMA+6IKeSIFlZerKFL3+WG7uh9rDYXV/WhJd4VKIrVD3EJsy1ehEBXhi6m/1hacWDnWby27dVV4V/JTtlmCb0SnYLQQ9TezVP+jPtHRuyCLU2gvpliFKBJZ4JpKfNT/BaSafO1ns8HfyeE3+fwTe8KdyFpW9iNNcE71deMTbIdhkcY47VBTTYP0B//hSoAw6gmGWkCasj3Gp3v50xbCcHPxiCmm0sQjjQWIHNEzVH6+WL4mb5jdA46K4DA8rjaZ0AKGOkJxKy11fI8hlen9O1GmzDLNtUEnHpKVzGm2JljHEORyrPqVQpXSEqIT9m418ObmhDZUSsbjR6+0scjY6emJ6ZOnvgU53fPCNnuD+gD+o6Qsu2l/CF+51biYTDy6E7dBF+wENxXTdg3hXj6LhKJTxpjhoeL5A9dBmt/mICa8KzDHKu9e8LQNmseDf6ZanzsQspfcW/ai/XLLZJIzRKpGgCIx+M/5Et5jzNV6qXq2njd8GsJbPqlsdadhulEuD7B60iHn3PMCDnjCaGAuskUrC39PBYCKVWAw0kguYCgo/Tt0ke6dlnyYKuL/S4zXeilCWD6IkvaVCqK6xuc6IgCZY1TVNT/96U7tgoauRNuXpWCdqW8v01x03eTjE1c6BaHOTJlOksUbrz61AD+me5A6c=
