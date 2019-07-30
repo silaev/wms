@@ -84,6 +84,7 @@ before_install:
     echo "*** install a single replica set MongoDB";
     docker network create mongo-cluster;
     docker run --name mongo -p 27017:27017 -d --net mongo-cluster mongo:${IMG_TAG} --replSet rs0;
+    chmod +x ./tools/wait-for-mongo.sh
     ./tools/wait-for-mongo.sh mongo;
     docker exec -it mongo mongo --eval "printjson(rs.initiate())";
     ;;
