@@ -68,6 +68,7 @@ before_install:
     docker build -t s256/ssh-client:${IMG_TAG} -f Dockerfile.ssh-client .;
     docker push s256/ssh-client:${IMG_TAG};
     fi
+    ;;
 
     3)
     chmod +x tools/wait-for-mongo.sh;
