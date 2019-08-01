@@ -105,6 +105,7 @@ script:
     ./gradlew clean build -x test;
     docker-compose -f docker-compose-init-mongo-rs.yml up -d;
     docker wait run-it;
+    echo "Running integration tests"
     docker logs run-it;
     ;;
 

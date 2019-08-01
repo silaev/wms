@@ -11,6 +11,7 @@ import com.silaev.wms.security.SecurityConfig;
 import com.silaev.wms.testutil.ProductUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +24,13 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
+import org.testcontainers.containers.FixedHostPortGenericContainer;
+import org.testcontainers.containers.Network;
+import org.testcontainers.containers.wait.strategy.Wait;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -40,18 +45,46 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @AutoConfigureWebTestClient
 @ActiveProfiles("test")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+//@ContextConfiguration(initializers = ProductControllerITTest.Initializer.class)
 class ProductControllerITTest {
     private static final String BASE_URL = ApiV1.BASE_URL;
 
+    private static Network network = Network.newNetwork();
+    private static FixedHostPortGenericContainer mongo2 = new FixedHostPortGenericContainer<>("s256/wms-mongo:4.0.10")
+            .withNetwork(network)
+            .withNetworkAliases("mongo2")
+            .withExposedPorts(50002)
+            .withFixedExposedPort(50002, 50002)
+            .withCommand("--replSet", "docker-rs", "--port", "50002")
+            .waitingFor(
+                    Wait.forLogMessage(".*waiting for connections on port.*", 1)
+            );
+    private static FixedHostPortGenericContainer mongo3 = new FixedHostPortGenericContainer<>("s256/wms-mongo:4.0.10")
+            .withNetwork(network)
+            .withNetworkAliases("mongo3")
+            .withExposedPorts(50003)
+            .withFixedExposedPort(50003, 50003)
+            .withCommand("--replSet", "docker-rs", "--port", "50003")
+            .waitingFor(
+                    Wait.forLogMessage(".*waiting for connections on port.*", 1)
+            );
+    private static FixedHostPortGenericContainer mongo1 = new FixedHostPortGenericContainer<>("s256/wms-mongo:4.0.10")
+            .withNetwork(network)
+            .dependsOn(Arrays.asList(mongo2, mongo3))
+            .withNetworkAliases("mongo1")
+            .withExposedPorts(50001)
+            .withFixedExposedPort(50001, 50001)
+            .withCommand("--replSet", "docker-rs", "--port", "50001")
+            .waitingFor(
+                    Wait.forLogMessage(".*waiting for connections on port.*", 1)
+            );
+
     @Autowired
     private WebTestClient webClient;
-
     @Autowired
     private ProductToProductDtoConverter productConverter;
-
     @Autowired
     private ProductDao productDao;
-
     private Product product1;
     private Product product2;
     private Product product3;
@@ -59,8 +92,33 @@ class ProductControllerITTest {
     private ProductDto productDto2;
     private ProductDto productDto3;
 
+    @BeforeAll
+    static void setUpBeforeAll() throws IOException, InterruptedException {
+        mongo2.start();
+        mongo3.start();
+        mongo1.start();
+
+        log.debug(
+                mongo1.execInContainer(
+                        "mongo", "--port", "50001", "--eval", "rs.initiate({\n" +
+                                "    \"_id\": \"docker-rs\",\n" +
+                                "    \"members\": [\n" +
+                                "        {\"_id\": 0, \"host\": \"mongo1:50001\"},\n" +
+                                "        {\"_id\": 1, \"host\": \"mongo2:50002\"},\n" +
+                                "        {\"_id\": 2, \"host\": \"mongo3:50003\"}\n" +
+                                "    ]\n" +
+                                "});"
+                ).getStdout());
+
+        mongo1.waitingFor(
+                Wait.forLogMessage(".*election succeeded.*", 1)
+        );
+
+        log.debug(mongo1.execInContainer("mongo", "--port", "50001", "--eval", "rs.status()").getStdout());
+    }
+
     @BeforeEach
-    void setUp() {
+    void setUpBeforeEach() {
         product1 = ProductUtil.mockProduct(120589L, "AAA", Brand.DOLCE, BigDecimal.valueOf(9), 9, Size.SIZE_50);
         product2 = ProductUtil.mockProduct(120590L, "BBB", Brand.DOLCE, BigDecimal.valueOf(15.69), 6, Size.SIZE_100);
         product3 = ProductUtil.mockProduct(120591L, "CCC", Brand.ENGLISH_LAUNDRY, BigDecimal.valueOf(55.12), 3, Size.SIZE_100);
@@ -236,7 +294,6 @@ class ProductControllerITTest {
                 .verifyComplete();
     }
 
-
     @WithMockUser(authorities = SecurityConfig.WRITE_PRIVILEGE)
     @Test
     void shouldCreateProducts() {
@@ -274,4 +331,23 @@ class ProductControllerITTest {
                 .expectNextSequence(products)
                 .verifyComplete();
     }
+
+    /*
+    static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+        @Override
+        public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
+            final String mongo1Host = "mongo1" + ":" + mongo1.getMappedPort(50001);
+            final String mongo2Host = "mongo2" + ":" + mongo2.getMappedPort(50002);
+            final String mongo3Host = "mongo3" + ":" + mongo3.getMappedPort(50003);
+
+            TestPropertyValues values = TestPropertyValues.of(
+                    "spring.data.mongodb.uri: mongodb://"
+                            + mongo1Host + ","
+                            + mongo2Host + ","
+                            + mongo3Host + "/test?replicaSet=docker-rs"
+            );
+            values.applyTo(configurableApplicationContext);
+        }
+    }
+     */
 }
