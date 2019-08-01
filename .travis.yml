@@ -40,8 +40,11 @@ before_install:
 
     echo "Appending to path $PATH"
     sudo apt-get install pass -y;
-    sudo PATH=$PATH:/tools | echo "$PATH"
-    PATH=$PATH:/tools | echo "$PATH"
+
+    export PATH=$PATH:/tools
+    echo "************"
+    echo "new path $PATH"
+    echo "************"
     chmod +x tools/pass_init.sh;
     ./tools/pass_init.sh;
     echo "$DOCKER_PASSWORD" | docker login -u "s256" --password-stdin;
