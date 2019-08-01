@@ -39,6 +39,7 @@ before_install:
     chmod +x docker-compose;
     sudo mv docker-compose /usr/local/bin;
 
+    PATH=$PATH:/tools
     chmod +x tools/pass_init.sh;
     ./tools/pass_init.sh $PASSPH;
     echo "$DOCKER_PASSWORD" | docker login -u "s256" --password-stdin;
