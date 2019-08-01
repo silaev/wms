@@ -38,7 +38,7 @@ before_install:
     chmod +x docker-compose;
     sudo mv docker-compose /usr/local/bin;
 
-    apt-get install pass -y;
+    sudo apt-get install pass -y;
     PATH=$PATH:/tools
     chmod +x tools/pass_init.sh;
     ./tools/pass_init.sh;
