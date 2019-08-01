@@ -104,8 +104,8 @@ script:
     echo "*** run gradlew without any params, MONGODB_MODE $MONGODB_MODE";
     ./gradlew clean build -x test;
     docker-compose -f docker-compose-init-mongo-rs.yml up -d;
-    docker wait run-it
-    docker logs run-it
+    docker wait run-it;
+    docker logs run-it;
     ;;
 
     1)
