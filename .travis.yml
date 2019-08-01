@@ -13,7 +13,7 @@ addons:
     - mongo3
   apt:
     packages:
-      #- pass
+      - pass
       - docker-ce
 
 env:
@@ -28,7 +28,7 @@ env:
     - secure: l+S6DwQbFbtWroQWePsGMA+6IKeSIFlZerKFL3+WG7uh9rDYXV/WhJd4VKIrVD3EJsy1ehEBXhi6m/1hacWDnWby27dVV4V/JTtlmCb0SnYLQQ9TezVP+jPtHRuyCLU2gvpliFKBJZ4JpKfNT/BaSafO1ns8HfyeE3+fwTe8KdyFpW9iNNcE71deMTbIdhkcY47VBTTYP0B//hSoAw6gmGWkCasj3Gp3v50xbCcHPxiCmm0sQjjQWIHNEzVH6+WL4mb5jdA46K4DA8rjaZ0AKGOkJxKy11fI8hlen9O1GmzDLNtUEnHpKVzGm2JljHEORyrPqVQpXSEqIT9m418ObmhDZUSsbjR6+0scjY6emJ6ZOnvgU53fPCNnuD+gD+o6Qsu2l/CF+51biYTDy6E7dBF+wENxXTdg3hXj6LhKJTxpjhoeL5A9dBmt/mICa8KzDHKu9e8LQNmseDf6ZanzsQspfcW/ai/XLLZJIzRKpGgCIx+M/5Et5jzNV6qXq2njd8GsJbPqlsdadhulEuD7B60iHn3PMCDnjCaGAuskUrC39PBYCKVWAw0kguYCgo/Tt0ke6dlnyYKuL/S4zXeilCWD6IkvaVCqK6xuc6IgCZY1TVNT/96U7tgoauRNuXpWCdqW8v01x03eTjE1c6BaHOTJlOksUbrz61AD+me5A6c=
     - secure: gtO3DOnq6DkswL7yY+6Jpz8gX0FRjzS5dfwuFc9RFJ+QXV6Q43/UI4O4dO3FsbxEJIR7FlliQ7W/27bxtz3Soa+BnpckouffrC0vof4p8s6Bcf4UBSwIGyeHuISI7BTcy+71RcnZWLOli08COEulSJXzmFS/h9EdmD162a0sNdcsc1C2fcUT1SvNpLEwKc4Li/HwZLGKlmYl/SmP6wgrC022STaLHw63FgZK45AnvQaQ3H6D+JF97Ulyrpm00fiNz25izx45ov4a26/ZedBIh0sZz/cPvj0oVi0RLzXC14EYbG3EdsUavbbI2qI0l1hj173FxwrMzG+gZ6jXcmywSBN3vy85ykP1tkxVmCkbsuPohIT9scP1K6TRUKhZHggcC68U+uPMi79aDfFTs8PZGem3USZrd+Leuhgg5KGYnjyJuOGiSPep9R2FUWVboy2CQicvqcLxD3Rv/hEZS+YfV5hqwsS7oPd7KxqACNApauDjC8gdsCYQ7xtiLvEp9jBdtnyjQaIOXSVMRNK8qQWZI1dSkTzvjasa21DVOJwEarP7gWvCZOshvDwRoh4Ow3azt9AgdNIZpdOKhUB9ejX0P87wO9VXcUr9q+2BtOLkbF1AFnvGTcsr8zDXQIRpCdMmYCZXmLFEleCdkqep3rWJf5YJrAB7iy1kZTG381xd8zk=
     - secure: u0isodbdjtSXAN/S6JQ1mf0cDOdEe7ZvoVOIFej4GHS7M3YqozDbFbV7Jt++PZnN8Lzt3Lu+9GFpQBqyj0WBzAQDwWz5nO9zFG439Wx1ZLMdxGhCI//U6CW1dBVZv9pTchUXwYuFLGB7Jb/OeDErrt4GOxI2U0WFNqmYO0M5UXPnYq0GgHiRPthrNUey6kGVerqqAURwp02zpK5+St5WTqPaBerTI/G+ZEruuYcnKO6o/2UAlfiRpZYJov1EqJ9BGsnFCesZbdAQBY0vrndAEH90vp07vWIWRXS3ALAXvT6m1XkE2Bw20TWldZ3vFr1jfJzzQhwr9OtwqGpfIT/wvgkduI0po9x3gMSaIozotT/DMkpraiZrOBoo1Ueo7iw654XkZCaGaa59zjvYiNtIQUiOx7R2HRI0VLchM2KY/AmHady5CjndwU1Bo7o7xn/tGMli7eKRc9sWdV3Qv71L6ucqu4u098RpOp/oJNXcWJVtls00SE1iABojwFL2gL/i9LDkGv5JCsNC0c1A1zD3pbBVf6sZ1oLgpgp6L801m+iNKxKPnFEogos7a4lEHQ2YsdH+A3KrwVgusG8JlJN99j4u+FKHMNrE+OsaG17eKQYLetzdx2VMfEz9z38hYkL90sxwbAfiECOAf+6vOfR36NWFOzU0BEXpAdZMen3pZJ8=
-      
+
 before_install:
   - chmod +x gradlew;
 
@@ -40,7 +40,8 @@ before_install:
     sudo mv docker-compose /usr/local/bin;
 
     chmod +x tools/pass_init.sh;
-    ./tools/pass_init.sh $PASSPH
+    ./tools/pass_init.sh $PASSPH;
+    - sed -i '0,/{/s/{/{\n\t"credsStore": "pass",/' ~/.docker/config.json;
     echo "$DOCKER_PASSWORD" | docker login -u "s256" --password-stdin;
 
     chmod +x tools/docker_image_tag_exists.sh;
@@ -104,18 +105,20 @@ after_success:
 script:
   - case "${MONGODB_MODE}" in
     0)
-    echo "*** run gradlew without any params";
+    echo "*** run gradlew without any params, MONGODB_MODE $MONGODB_MODE";
     ./gradlew clean build -x test;
     docker-compose -f docker-compose-init-mongo-rs.yml up -d;
+    docker wait run-it
+    docker logs run-it
     ;;
 
     1)
-    echo "*** run gradlew with a param spring.data.mongodb.uri";
+    echo "*** run gradlew with a param spring.data.mongodb.uri, MONGODB_MODE $MONGODB_MODE";
     ./gradlew clean build -D"spring.data.mongodb.uri"="mongodb://localhost:27017/test";
     ;;
 
     3)
-    echo "*** run gradlew without any params";
+    echo "*** run gradlew without any params, MONGODB_MODE $MONGODB_MODE";
     ./gradlew clean build;
     ;;
     esac
