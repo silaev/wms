@@ -8,7 +8,7 @@ services:
     networks:
       - mongonet
     depends_on:
-      - mongo1
+      - init-mongo-rs
     logging:
       driver: "json-file"
       options:

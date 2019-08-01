@@ -4,7 +4,7 @@ jdk: openjdk11
 
 services: docker
 
-#dist: xenial
+dist: bionic
 
 addons:
   hosts:
@@ -38,6 +38,8 @@ before_install:
     chmod +x docker-compose;
     sudo mv docker-compose /usr/local/bin;
 
+    chmod +x tools/pass_init.sh;
+    ./tools/pass_init.sh
     echo "$DOCKER_PASSWORD" | docker login -u "s256" --password-stdin;
 
     chmod +x tools/docker_image_tag_exists.sh;

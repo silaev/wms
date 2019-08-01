@@ -1,5 +1,5 @@
 FROM bellsoft/liberica-openjdk-alpine:11
+
 COPY . .
-RUN chmod +x ./gradlew
-ENTRYPOINT ["./gradlew"]
-CMD ["test"]
+
+CMD ["./gradlew", "test"]
