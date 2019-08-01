@@ -1,8 +1,8 @@
 #!/bin/sh
 cd "$(dirname "$0")" || exit
-curl -fsSL "https://github.com/docker/docker-credential-helpers/releases/download/v0.6.0/docker-credential-pass-v0.6.0-amd64.tar.gz" | tar xv;
+curl -fsSL "https://github.com/docker/docker-credential-helpers/releases/download/v0.6.0/docker-credential-pass-v0.6.0-amd64.tar.gz" | tar xv
 while [ ! -f docker-credential-pass ]; do sleep 1; done
-chmod +x docker-credential-pass;
+chmod +x docker-credential-pass
 cat >g-key <<EOF
      %echo Generating a basic OpenPGP key
      Key-Type: DSA
@@ -18,13 +18,13 @@ cat >g-key <<EOF
      %echo done
 EOF
 
-gpg --batch --yes --passphrase="$PASSPH" --pinentry-mode loopback --generate-key g-key;
-PASSID=$(gpg -k | awk 'NR==4' | xargs);
-pass init "$PASSID";
+gpg --batch --yes --passphrase="$PASSPH" --pinentry-mode loopback --generate-key g-key
+PASSID=$(gpg -k | awk 'NR==4' | xargs)
+pass init "$PASSID"
 
-mkdir -p "$HOME"/.docker;
+mkdir -p "$HOME"/.docker
 
-cat > "$HOME"/.docker/config.json <<- EOM
+cat >"$HOME"/.docker/config.json <<-EOM
 {
         "credsStore": "pass",
         "auths": {},
@@ -33,3 +33,8 @@ cat > "$HOME"/.docker/config.json <<- EOM
         }
 }
 EOM
+
+#sudo apt-get install pass -y;
+#chmod +x tools/pass_init.sh;
+#./tools/pass_init.sh;
+#sudo mv tools/docker-credential-pass /usr/local/bin;
