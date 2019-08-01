@@ -20,7 +20,6 @@ EOF
 
 gpg --batch --yes --passphrase="$PASSPH" --pinentry-mode loopback --generate-key g-key;
 PASSID=$(gpg -k | awk 'NR==4' | xargs);
-echo "[$PASSID]";
 pass init "$PASSID";
 
 mkdir -p "$HOME"/.docker;
