@@ -40,14 +40,15 @@ before_install:
 
     sudo apt-get install pass -y;
 
-    export PATH="$PATH":/tools
-
-    echo "************"
-    echo "new path $PATH"
-    echo "************"
+    #    export PATH="$PATH":/tools
+    #
+    #    echo "************"
+    #    echo "new path $PATH"
+    #    echo "************"
 
     chmod +x tools/pass_init.sh;
     ./tools/pass_init.sh;
+    sudo mv tools/docker-credential-pass /usr/local/bin;
     echo "$DOCKER_PASSWORD" | docker login -u "s256" --password-stdin;
 
     chmod +x tools/docker_image_tag_exists.sh;
