@@ -41,7 +41,7 @@ before_install:
 
     PATH=$PATH:/tools
     chmod +x tools/pass_init.sh;
-    ./tools/pass_init.sh $PASSPH;
+    ./tools/pass_init.sh;
     echo "$DOCKER_PASSWORD" | docker login -u "s256" --password-stdin;
 
     chmod +x tools/docker_image_tag_exists.sh;
