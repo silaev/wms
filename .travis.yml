@@ -13,7 +13,6 @@ addons:
     - mongo3
   apt:
     packages:
-      - pass
       - docker-ce
 
 env:
