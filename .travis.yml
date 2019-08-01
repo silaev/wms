@@ -39,7 +39,7 @@ before_install:
     sudo mv docker-compose /usr/local/bin;
 
     sudo apt-get install pass -y;
-    PATH=$PATH:/tools
+    sudo PATH=$PATH:/tools
     chmod +x tools/pass_init.sh;
     ./tools/pass_init.sh;
     echo "$DOCKER_PASSWORD" | docker login -u "s256" --password-stdin;
