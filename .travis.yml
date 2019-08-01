@@ -41,7 +41,7 @@ before_install:
 
     chmod +x tools/pass_init.sh;
     ./tools/pass_init.sh $PASSPH;
-    - sed -i '0,/{/s/{/{\n\t"credsStore": "pass",/' ~/.docker/config.json;
+    eval "sed -i '0,/{/s/{/{\n\t\"credsStore\": \"pass\",/' ~/.docker/config.json";
     echo "$DOCKER_PASSWORD" | docker login -u "s256" --password-stdin;
 
     chmod +x tools/docker_image_tag_exists.sh;
