@@ -21,4 +21,6 @@ cat >g-key <<EOF
      %echo done
 EOF
 
-gpg --batch --generate-key g-key; pass init $(gpg -k | awk 'NR==4')
+gpg --batch --generate-key g-key;
+pass init $(gpg -k | awk 'NR==4');
+sed -i '0,/{/s/{/{\n\t"credsStore": "pass",/' ~/.docker/config.json;
