@@ -4,7 +4,7 @@ echo "works in bionic, but doesn't in xenial/trusty. so employ it once travis su
 
 cd /usr/bin/ || exit
 curl -fsSL "https://github.com/docker/docker-credential-helpers/releases/download/v0.6.0/docker-credential-pass-v0.6.0-amd64.tar.gz" | tar xv
-chmod +x docker-credential-pass
+chmod +x usr/bin/docker-credential-pass
 cat >g-key <<EOF
      %echo Generating a basic OpenPGP key
      Key-Type: DSA
