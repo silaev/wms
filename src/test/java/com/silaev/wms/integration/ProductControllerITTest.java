@@ -10,6 +10,7 @@ import com.silaev.wms.model.Size;
 import com.silaev.wms.security.SecurityConfig;
 import com.silaev.wms.testutil.ProductUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,14 +18,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
-import org.testcontainers.containers.FixedHostPortGenericContainer;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
 import reactor.core.publisher.Flux;
@@ -40,44 +45,47 @@ import java.util.List;
 import static org.hamcrest.Matchers.isIn;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * Add 127.0.0.1 mongo1 mongo2 mongo3 host.docker.internal to the OS host
+ */
 @Slf4j
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
 @ActiveProfiles("test")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-//@ContextConfiguration(initializers = ProductControllerITTest.Initializer.class)
+@ContextConfiguration(initializers = ProductControllerITTest.Initializer.class)
 class ProductControllerITTest {
     private static final String BASE_URL = ApiV1.BASE_URL;
 
-    private static Network network = Network.newNetwork();
-    private static FixedHostPortGenericContainer mongo2 = new FixedHostPortGenericContainer<>("s256/wms-mongo:4.0.10")
+    private final static Network network = Network.newNetwork();
+    private final static GenericContainer mongo2 = new GenericContainer<>("s256/wms-mongo:4.0.10")
             .withNetwork(network)
             .withNetworkAliases("mongo2")
-            .withExposedPorts(50002)
-            .withFixedExposedPort(50002, 50002)
-            .withCommand("--replSet", "docker-rs", "--port", "50002")
+            .withExposedPorts(27017)
+            .withCommand("--replSet", "docker-rs", "--bind_ip", "localhost,mongo2")
             .waitingFor(
                     Wait.forLogMessage(".*waiting for connections on port.*", 1)
             );
-    private static FixedHostPortGenericContainer mongo3 = new FixedHostPortGenericContainer<>("s256/wms-mongo:4.0.10")
+    private final static GenericContainer mongo3 = new GenericContainer<>("s256/wms-mongo:4.0.10")
             .withNetwork(network)
             .withNetworkAliases("mongo3")
-            .withExposedPorts(50003)
-            .withFixedExposedPort(50003, 50003)
-            .withCommand("--replSet", "docker-rs", "--port", "50003")
+            .withExposedPorts(27017)
+            .withCommand("--replSet", "docker-rs", "--bind_ip", "localhost,mongo3")
             .waitingFor(
                     Wait.forLogMessage(".*waiting for connections on port.*", 1)
             );
-    private static FixedHostPortGenericContainer mongo1 = new FixedHostPortGenericContainer<>("s256/wms-mongo:4.0.10")
+    private final static GenericContainer mongo1 = new GenericContainer<>("s256/wms-mongo:4.0.10")
             .withNetwork(network)
             .dependsOn(Arrays.asList(mongo2, mongo3))
             .withNetworkAliases("mongo1")
-            .withExposedPorts(50001)
-            .withFixedExposedPort(50001, 50001)
-            .withCommand("--replSet", "docker-rs", "--port", "50001")
+            .withExposedPorts(27017)
+            .withCommand("--replSet", "docker-rs", "--bind_ip", "localhost,mongo1")
             .waitingFor(
                     Wait.forLogMessage(".*waiting for connections on port.*", 1)
             );
+    private static String MONGO_URL_1;
+    private static String MONGO_URL_2;
+    private static String MONGO_URL_3;
 
     @Autowired
     private WebTestClient webClient;
@@ -98,23 +106,43 @@ class ProductControllerITTest {
         mongo3.start();
         mongo1.start();
 
+        MONGO_URL_1 = "host.docker.internal:" + mongo1.getMappedPort(27017);
+        MONGO_URL_2 = "host.docker.internal:" + mongo2.getMappedPort(27017);
+        MONGO_URL_3 = "host.docker.internal:" + mongo3.getMappedPort(27017);
+
         log.debug(
                 mongo1.execInContainer(
-                        "mongo", "--port", "50001", "--eval", "rs.initiate({\n" +
-                                "    \"_id\": \"docker-rs\",\n" +
-                                "    \"members\": [\n" +
-                                "        {\"_id\": 0, \"host\": \"mongo1:50001\"},\n" +
-                                "        {\"_id\": 1, \"host\": \"mongo2:50002\"},\n" +
-                                "        {\"_id\": 2, \"host\": \"mongo3:50003\"}\n" +
-                                "    ]\n" +
-                                "});"
-                ).getStdout());
-
-        mongo1.waitingFor(
-                Wait.forLogMessage(".*election succeeded.*", 1)
+                        "mongo", "--eval", getMongoRsInitString()
+                ).getStdout()
         );
 
-        log.debug(mongo1.execInContainer("mongo", "--port", "50001", "--eval", "rs.status()").getStdout());
+        log.debug(
+                mongo1.execInContainer(
+                        "mongo", "--eval",
+                        "while(db.runCommand( { isMaster: 1 } ).ismaster==false) { " +
+                                "print('awaiting mongo1 to be a master node'); sleep(2000)" +
+                                " }"
+                ).getStdout()
+        );
+
+        log.debug(
+                mongo1.execInContainer("mongo", "--eval", "rs.status()").getStdout()
+        );
+    }
+
+    @NotNull
+    private static String getMongoRsInitString() {
+        return String.format(
+                "rs.initiate({\n" +
+                        "    \"_id\": \"docker-rs\",\n" +
+                        "    \"members\": [\n" +
+                        "        {\"_id\": 0, \"host\": \"%s\"},\n" +
+                        "        {\"_id\": 1, \"host\": \"%s\"},\n" +
+                        "        {\"_id\": 2, \"host\": \"%s\"}\n" +
+                        "    ]\n" +
+                        "});",
+                MONGO_URL_1, MONGO_URL_2, MONGO_URL_3
+        );
     }
 
     @BeforeEach
@@ -332,22 +360,16 @@ class ProductControllerITTest {
                 .verifyComplete();
     }
 
-    /*
     static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         @Override
         public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-            final String mongo1Host = "mongo1" + ":" + mongo1.getMappedPort(50001);
-            final String mongo2Host = "mongo2" + ":" + mongo2.getMappedPort(50002);
-            final String mongo3Host = "mongo3" + ":" + mongo3.getMappedPort(50003);
-
-            TestPropertyValues values = TestPropertyValues.of(
-                    "spring.data.mongodb.uri: mongodb://"
-                            + mongo1Host + ","
-                            + mongo2Host + ","
-                            + mongo3Host + "/test?replicaSet=docker-rs"
+            String mongoUrl = String.format(
+                    "spring.data.mongodb.uri: mongodb://%s,%s,%s/test?replicaSet=docker-rs",
+                    MONGO_URL_1, MONGO_URL_2, MONGO_URL_3
             );
+            TestPropertyValues values = TestPropertyValues.of(mongoUrl);
             values.applyTo(configurableApplicationContext);
+            log.debug("mongoUrl: {}", mongoUrl);
         }
     }
-     */
 }
