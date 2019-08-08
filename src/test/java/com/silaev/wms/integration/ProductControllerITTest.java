@@ -47,7 +47,7 @@ import static org.hamcrest.Matchers.isIn;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * Add 127.0.0.1 mongo1 mongo2 mongo3 host.docker.internal to the OS host
+ * Add `127.0.0.1 host.docker.internal` to the OS host
  */
 @Slf4j
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -61,26 +61,23 @@ class ProductControllerITTest {
     private final static Network network = Network.newNetwork();
     private final static GenericContainer mongo2 = new GenericContainer<>("s256/wms-mongo:4.0.10")
             .withNetwork(network)
-            .withNetworkAliases("mongo2")
             .withExposedPorts(27017)
-            .withCommand("--replSet", "docker-rs", "--bind_ip", "localhost,mongo2")
+            .withCommand("--replSet", "docker-rs")
             .waitingFor(
                     Wait.forLogMessage(".*waiting for connections on port.*", 1)
             );
     private final static GenericContainer mongo3 = new GenericContainer<>("s256/wms-mongo:4.0.10")
             .withNetwork(network)
-            .withNetworkAliases("mongo3")
             .withExposedPorts(27017)
-            .withCommand("--replSet", "docker-rs", "--bind_ip", "localhost,mongo3")
+            .withCommand("--replSet", "docker-rs")
             .waitingFor(
                     Wait.forLogMessage(".*waiting for connections on port.*", 1)
             );
     private final static GenericContainer mongo1 = new GenericContainer<>("s256/wms-mongo:4.0.10")
             .withNetwork(network)
             .dependsOn(Arrays.asList(mongo2, mongo3))
-            .withNetworkAliases("mongo1")
             .withExposedPorts(27017)
-            .withCommand("--replSet", "docker-rs", "--bind_ip", "localhost,mongo1")
+            .withCommand("--replSet", "docker-rs")
             .waitingFor(
                     Wait.forLogMessage(".*waiting for connections on port.*", 1)
             );
