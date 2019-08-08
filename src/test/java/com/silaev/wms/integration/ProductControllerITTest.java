@@ -29,6 +29,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
+import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -83,6 +84,7 @@ class ProductControllerITTest {
             .waitingFor(
                     Wait.forLogMessage(".*waiting for connections on port.*", 1)
             );
+    private static final int AWAIT_MASTER_NODE_ATTEMPTS = 29;
     private static String MONGO_URL_1;
     private static String MONGO_URL_2;
     private static String MONGO_URL_3;
@@ -116,14 +118,31 @@ class ProductControllerITTest {
                 ).getStdout()
         );
 
-        log.debug(
-                mongo1.execInContainer(
-                        "mongo", "--eval",
-                        "while(db.runCommand( { isMaster: 1 } ).ismaster==false) { " +
-                                "print('awaiting mongo1 to be a master node'); sleep(2000)" +
-                                " }"
-                ).getStdout()
+        log.debug("Awaiting mongo1 to be a master node for {} attempts", AWAIT_MASTER_NODE_ATTEMPTS);
+        Container.ExecResult execResultWaitForMaster = mongo1.execInContainer(
+                "mongo", "--eval",
+                String.format(
+                        "var attempt = 0; " +
+                                "while" +
+                                "(db.runCommand( { isMaster: 1 } ).ismaster==false) " +
+                                "{ " +
+                                "if (attempt > %d) {quit(1);} " +
+                                "print('awaiting mongo1 to be a master node ' + attempt); sleep(1000);  attempt++; " +
+                                " }", AWAIT_MASTER_NODE_ATTEMPTS
+                )
         );
+        log.debug(
+                execResultWaitForMaster.getStdout()
+        );
+
+        if (execResultWaitForMaster.getExitCode() == 1) {
+            String errorMessage = String.format(
+                    "The master node was not initialized in a set timeout: %d attempts",
+                    AWAIT_MASTER_NODE_ATTEMPTS
+            );
+            log.error(errorMessage);
+            throw new IllegalStateException(errorMessage);
+        }
 
         log.debug(
                 mongo1.execInContainer("mongo", "--eval", "rs.status()").getStdout()
