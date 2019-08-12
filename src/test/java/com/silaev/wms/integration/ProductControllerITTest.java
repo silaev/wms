@@ -10,6 +10,7 @@ import com.silaev.wms.model.Size;
 import com.silaev.wms.security.SecurityConfig;
 import com.silaev.wms.testutil.ProductUtil;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -29,10 +30,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
-import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
@@ -55,10 +57,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ActiveProfiles("test")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @ContextConfiguration(initializers = ProductControllerITTest.Initializer.class)
+@Testcontainers
 class ProductControllerITTest {
     private static final String BASE_URL = ApiV1.BASE_URL;
 
     private final static Network network = Network.newNetwork();
+
+    @Container
     private final static GenericContainer mongo2 = new GenericContainer<>("s256/wms-mongo:4.0.10")
             .withNetwork(network)
             .withExposedPorts(27017)
@@ -66,6 +71,8 @@ class ProductControllerITTest {
             .waitingFor(
                     Wait.forLogMessage(".*waiting for connections on port.*", 1)
             );
+
+    @Container
     private final static GenericContainer mongo3 = new GenericContainer<>("s256/wms-mongo:4.0.10")
             .withNetwork(network)
             .withExposedPorts(27017)
@@ -73,6 +80,8 @@ class ProductControllerITTest {
             .waitingFor(
                     Wait.forLogMessage(".*waiting for connections on port.*", 1)
             );
+
+    @Container
     private final static GenericContainer mongo1 = new GenericContainer<>("s256/wms-mongo:4.0.10")
             .withNetwork(network)
             .dependsOn(Arrays.asList(mongo2, mongo3))
@@ -101,10 +110,6 @@ class ProductControllerITTest {
 
     @BeforeAll
     static void setUpBeforeAll() throws IOException, InterruptedException {
-        mongo2.start();
-        mongo3.start();
-        mongo1.start();
-
         MONGO_URL_1 = "host.docker.internal:" + mongo1.getMappedPort(27017);
         MONGO_URL_2 = "host.docker.internal:" + mongo2.getMappedPort(27017);
         MONGO_URL_3 = "host.docker.internal:" + mongo3.getMappedPort(27017);
@@ -116,7 +121,7 @@ class ProductControllerITTest {
         );
 
         log.debug("Awaiting mongo1 to be a master node for {} attempts", AWAIT_MASTER_NODE_ATTEMPTS);
-        Container.ExecResult execResultWaitForMaster = mongo1.execInContainer(
+        val execResultWaitForMaster = mongo1.execInContainer(
                 "mongo", "--eval",
                 String.format(
                         "var attempt = 0; " +
@@ -133,7 +138,7 @@ class ProductControllerITTest {
         );
 
         if (execResultWaitForMaster.getExitCode() == 1) {
-            String errorMessage = String.format(
+            val errorMessage = String.format(
                     "The master node was not initialized in a set timeout: %d attempts",
                     AWAIT_MASTER_NODE_ATTEMPTS
             );
@@ -184,7 +189,7 @@ class ProductControllerITTest {
         insertMockProductsIntoDb(Arrays.asList(product1, product2, product3));
 
         //WHEN
-        WebTestClient.ResponseSpec exchange = webClient
+        val exchange = webClient
                 .get()
                 .uri(uriBuilder -> uriBuilder.path(BASE_URL + "/all")
                         .queryParam("name", "AAA")
@@ -208,7 +213,7 @@ class ProductControllerITTest {
         insertMockProductsIntoDb(Arrays.asList(product1, product2, product3));
 
         //WHEN
-        WebTestClient.ResponseSpec exchange = webClient
+        val exchange = webClient
                 .get()
                 .uri(BASE_URL + "/admin/all")
                 .accept(MediaType.APPLICATION_STREAM_JSON)
@@ -226,12 +231,10 @@ class ProductControllerITTest {
     @Test
     void shouldFindLastProducts() {
         //GIVEN
-        //log.debug("After insert product1:{} product2:{} product3:{}",
-        // product1.getQuantity(), product2.getQuantity(), product3.getQuantity());
         insertMockProductsIntoDb(Arrays.asList(product1, product2, product3));
 
         //WHEN
-        WebTestClient.ResponseSpec exchange = webClient
+        val exchange = webClient
                 .get()
                 .uri(uriBuilder -> uriBuilder.path(BASE_URL + "/last")
                         //.queryParam("lastSize", "5") by default
@@ -271,7 +274,7 @@ class ProductControllerITTest {
         insertMockProductsIntoDb(Arrays.asList(product1, product2));
 
         //WHEN
-        WebTestClient.ResponseSpec exchange = webClient
+        val exchange = webClient
                 .patch()
                 .uri(BASE_URL)
                 .contentType(MediaType.MULTIPART_FORM_DATA)
@@ -315,7 +318,7 @@ class ProductControllerITTest {
         BigInteger expected2 = BigInteger.valueOf(27);
 
         //WHEN
-        WebTestClient.ResponseSpec exchange = webClient
+        val exchange = webClient
                 .patch()
                 .uri(BASE_URL)
                 .contentType(MediaType.MULTIPART_FORM_DATA)
@@ -327,7 +330,7 @@ class ProductControllerITTest {
                 .expectStatus()
                 .isAccepted();
 
-        Flux<Product> all = productDao.findAllByOrderByQuantityAsc();
+        val all = productDao.findAllByOrderByQuantityAsc();
         StepVerifier.create(all)
                 .assertNext(x -> {
                     assertEquals(expected1, x.getQuantity());
@@ -342,10 +345,10 @@ class ProductControllerITTest {
     @Test
     void shouldCreateProducts() {
         //GIVEN
-        Flux<ProductDto> dtoFlux = Flux.just(productDto1, productDto2);
+        val dtoFlux = Flux.just(productDto1, productDto2);
 
         //WHEN
-        WebTestClient.ResponseSpec exchange = webClient.post()
+        val exchange = webClient.post()
                 .uri(BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
@@ -366,8 +369,8 @@ class ProductControllerITTest {
      * @param products
      */
     private void insertMockProductsIntoDb(List<Product> products) {
-        Flux<Product> productFlux = Flux.fromIterable(products);
-        Flux<Product> insert = productDao.deleteAll()
+        val productFlux = Flux.fromIterable(products);
+        val insert = productDao.deleteAll()
                 .thenMany(productDao.insert(productFlux))
                 .sort(Comparator.comparingLong(Product::getArticle));
 
@@ -379,11 +382,11 @@ class ProductControllerITTest {
     static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         @Override
         public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-            String mongoUrl = String.format(
+            val mongoUrl = String.format(
                     "spring.data.mongodb.uri: mongodb://%s,%s,%s/test?replicaSet=docker-rs",
                     MONGO_URL_1, MONGO_URL_2, MONGO_URL_3
             );
-            TestPropertyValues values = TestPropertyValues.of(mongoUrl);
+            val values = TestPropertyValues.of(mongoUrl);
             values.applyTo(configurableApplicationContext);
             log.debug("mongoUrl: {}", mongoUrl);
         }
