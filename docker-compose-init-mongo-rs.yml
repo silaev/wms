@@ -1,0 +1,84 @@
+version: "3.7"
+services:
+  run-it:
+    build:
+      context: .
+      dockerfile: Dockerfile.run-it
+    container_name: "run-it"
+    networks:
+      - mongonet
+    depends_on:
+      - init-mongo-rs
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+
+  init-mongo-rs:
+    container_name: "init-mongo-rs"
+    image: s256/wms-ssh-client:${IMG_TAG}
+    networks:
+      - mongonet
+    depends_on:
+      - mongo1
+    command: ["sh", "-c", "./tools/wait-for-ssh.sh mongo1; ssh-keygen -t rsa -N '' -f ~/.ssh/id_rsa; ./tools/exp_promt_yes.sh ssh-copy-id s256 mongo1 ${SSHPASS}; ssh s256@mongo1 'mongo --port 50001 < /scripts/init.js'"]
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+
+  mongo1:
+    image: s256/wms-mongo-ssh-server:${IMG_TAG}
+    container_name: "mongo1"
+    ports:
+      - 50001:50001
+    command: mongod --replSet docker-rs --port 50001
+    restart: always
+    networks:
+      - mongonet
+    depends_on:
+      - mongo2
+      - mongo3
+    healthcheck:
+      test: ["CMD-SHELL", "./tools/ssh_mongo_healthcheck.sh"]
+      interval: 20s
+      timeout: 3s
+      retries: 2
+      start_period: 5s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+
+  mongo2:
+    image: s256/wms-mongo:${IMG_TAG}
+    container_name: "mongo2"
+    ports:
+      - 50002:50002
+    command: mongod --replSet docker-rs --port 50002
+    restart: always
+    networks:
+      - mongonet
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+
+  mongo3:
+    image: s256/wms-mongo:${IMG_TAG}
+    container_name: "mongo3"
+    ports:
+      - 50003:50003
+    command: mongod --replSet docker-rs --port 50003
+    restart: always
+    networks:
+      - mongonet
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+
+networks:
+  mongonet:
+    external: false
+    name: mongo-cluster

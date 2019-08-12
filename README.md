@@ -82,3 +82,7 @@ Alternately, use Docker compose (see steps above)
 - docker run --name mongo -p 27017:27017 -d --net mongo-cluster mongo:4.0.10 --replSet rs0
 - ./wait-for-mongo.sh
 - docker exec -it mongo mongo --eval "printjson(rs.initiate())"
+
+#### Corner cases on different hosts
+in case of an error "bind to localhost" on Windows:
+https://github.com/docker/for-win/issues/1804

@@ -1,8 +1,7 @@
 #!/bin/sh
-
-echo "works in bionic, but doesn't in xenial trusty. so employ it once travis supports bionic"
-
+cd "$(dirname "$0")" || exit
 curl -fsSL "https://github.com/docker/docker-credential-helpers/releases/download/v0.6.0/docker-credential-pass-v0.6.0-amd64.tar.gz" | tar xv
+while [ ! -f docker-credential-pass ]; do sleep 1; done
 chmod +x docker-credential-pass
 cat >g-key <<EOF
      %echo Generating a basic OpenPGP key
@@ -14,10 +13,28 @@ cat >g-key <<EOF
      Name-Comment: with passphrase
      Name-Email: s256@gmail.com
      Expire-Date: 0
-     Passphrase: $1
      # Do a commit here, so that we can later print "done" :-)
      %commit
      %echo done
 EOF
 
-gpg --batch --generate-key g-key; pass init $(gpg -k | awk 'NR==4')
+gpg --batch --yes --passphrase="$PASSPH" --pinentry-mode loopback --generate-key g-key
+PASSID=$(gpg -k | awk 'NR==4' | xargs)
+pass init "$PASSID"
+
+mkdir -p "$HOME"/.docker
+
+cat >"$HOME"/.docker/config.json <<-EOM
+{
+        "credsStore": "pass",
+        "auths": {},
+        "HttpHeaders": {
+                "User-Agent": "Docker-Client/19.03.1 (linux)"
+        }
+}
+EOM
+
+#sudo apt-get install pass -y;
+#chmod +x tools/pass_init.sh;
+#./tools/pass_init.sh;
+#sudo mv tools/docker-credential-pass /usr/local/bin;

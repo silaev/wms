@@ -6,3 +6,4 @@ RUN apt-get update && apt-get install -y \
   dos2unix && dos2unix scripts/**
 LABEL version=$MONGO_VERSION
 EXPOSE 27017
+CMD ["mongod"]

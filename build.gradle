@@ -61,7 +61,7 @@ dependencies {
     //testRuntime group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.4.2'
     //compile group: 'io.projectreactor.tools', name: 'blockhound', version: '1.0.0.M4'
     //compile 'io.projectreactor:reactor-tools:3.3.0.M2'
-    //compile group: 'org.testcontainers', name: 'testcontainers', version: '1.11.3'
+    //compile group: 'org.testcontainers', name: 'testcontainers', version: '1.12.0'
     //compile group: 'com.vladmihalcea', name: 'db-testutil', version: '0.0.1'
 }
 
