@@ -12,7 +12,6 @@ buildscript {
 
 plugins {
     id "io.franzbecker.gradle-lombok" version "3.1.0"
-    id 'com.sourcemuse.mongo' version '1.0.7'
     id 'jacoco'
 }
 
@@ -47,7 +46,7 @@ dependencies {
 
     runtimeOnly('org.springframework.boot:spring-boot-devtools')
 
-    testImplementation('org.springframework.boot:spring-boot-starter-test'){
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'junit', module: 'junit'
     }
     testImplementation('io.projectreactor:reactor-test')
@@ -88,9 +87,13 @@ tasks.withType(Test) { Test task ->
     finalizedBy jacocoTestReport
 }
 
-wrapper{
+wrapper {
     gradleVersion = '5.4.1'
     distributionType = Wrapper.DistributionType.BIN
+}
+
+private static List<String> getSonarExclusions() {
+    new File("sonar.exclude").readLines()
 }
 
 jacocoTestReport {
@@ -102,20 +105,14 @@ jacocoTestReport {
         xml.destination file("${buildDir}/reports/jacoco/report.xml")
     }
 
+    getSonarExclusions()
+
     afterEvaluate {
         afterEvaluate {
             classDirectories.setFrom(
                     files(
                             classDirectories.files.collect {
-                                fileTree(dir: it, exclude:
-                                        [
-                                                'com/silaev/wms/entity/**',
-                                                'com/silaev/wms/dto/**',
-                                                'com/silaev/wms/config/**',
-                                                'com/silaev/wms/exception/**',
-                                                'com/silaev/wms/model'
-                                        ]
-                                )
+                                fileTree(dir: it, exclude: getSonarExclusions())
                             }
                     )
             )
@@ -149,15 +146,7 @@ jacocoTestCoverageVerification {
             classDirectories.setFrom(
                     files(
                             classDirectories.files.collect {
-                                fileTree(dir: it, exclude:
-                                        [
-                                                'com/silaev/wms/entity/**',
-                                                'com/silaev/wms/dto/**',
-                                                'com/silaev/wms/config/**',
-                                                'com/silaev/wms/exception/**',
-                                                'com/silaev/wms/model'
-                                        ]
-                                )
+                                fileTree(dir: it, exclude: getSonarExclusions())
                             }
                     )
             )

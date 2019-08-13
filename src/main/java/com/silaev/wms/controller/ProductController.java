@@ -54,8 +54,10 @@ public class ProductController {
      * @return Flux<ProductDto>
      */
     @GetMapping(value = "/all", produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
-    public Flux<ProductDto> findProductsByNameOrBrand(@RequestParam(value = "name", required = false) String name,
-                                                      @RequestParam(value = "brand", required = false) Brand brand) {
+    public Flux<ProductDto> findProductsByNameOrBrand(
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "brand", required = false) Brand brand
+    ) {
         log.debug("findProductsByNameOrBrand: {}, {}", name, brand);
 
         if ((name == null) && (brand == null)) {
@@ -101,11 +103,13 @@ public class ProductController {
      */
     @PostMapping(
             consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE
+            produces = MediaType.APPLICATION_STREAM_JSON_VALUE
     )
     @ResponseStatus(HttpStatus.CREATED)
-    public Flux<Product> createProducts(@RequestBody Flux<ProductDto> productDto,
-                                        @AuthenticationPrincipal Principal principal) {
+    public Flux<Product> createProducts(
+            @RequestBody Flux<ProductDto> productDto,
+            @AuthenticationPrincipal Principal principal
+    ) {
         log.debug("createProduct");
 
         return productService.createProduct(productDto, principal.getName());
@@ -119,8 +123,10 @@ public class ProductController {
      */
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PatchMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Mono<Void> patchProductQuantity(@RequestPart("file") Flux<FilePart> files,
-                                           @AuthenticationPrincipal Principal principal) {
+    public Mono<Void> patchProductQuantity(
+            @RequestPart("file") Flux<FilePart> files,
+            @AuthenticationPrincipal Principal principal
+    ) {
         log.debug("shouldPatchProductQuantity");
 
         return uploadProductService.patchProductQuantity(files, principal.getName())

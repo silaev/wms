@@ -1,6 +1,7 @@
 package com.silaev.wms.integration;
 
 import com.silaev.wms.annotation.version.ApiV1;
+import com.silaev.wms.containers.MongoReplicaSet;
 import com.silaev.wms.converter.ProductToProductDtoConverter;
 import com.silaev.wms.dao.ProductDao;
 import com.silaev.wms.dto.ProductDto;
@@ -11,9 +12,7 @@ import com.silaev.wms.security.SecurityConfig;
 import com.silaev.wms.testutil.ProductUtil;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,15 +29,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.Network;
-import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -48,9 +42,6 @@ import java.util.List;
 import static org.hamcrest.Matchers.isIn;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/**
- * Add `127.0.0.1 host.docker.internal` to the OS host
- */
 @Slf4j
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
@@ -58,42 +49,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @ContextConfiguration(initializers = ProductControllerITTest.Initializer.class)
 @Testcontainers
-class ProductControllerITTest {
+class ProductControllerITTest extends MongoReplicaSet {
     private static final String BASE_URL = ApiV1.BASE_URL;
-
-    private final static Network network = Network.newNetwork();
-
-    @Container
-    private final static GenericContainer mongo2 = new GenericContainer<>("s256/wms-mongo:4.0.10")
-            .withNetwork(network)
-            .withExposedPorts(27017)
-            .withCommand("--replSet", "docker-rs")
-            .waitingFor(
-                    Wait.forLogMessage(".*waiting for connections on port.*", 1)
-            );
-
-    @Container
-    private final static GenericContainer mongo3 = new GenericContainer<>("s256/wms-mongo:4.0.10")
-            .withNetwork(network)
-            .withExposedPorts(27017)
-            .withCommand("--replSet", "docker-rs")
-            .waitingFor(
-                    Wait.forLogMessage(".*waiting for connections on port.*", 1)
-            );
-
-    @Container
-    private final static GenericContainer mongo1 = new GenericContainer<>("s256/wms-mongo:4.0.10")
-            .withNetwork(network)
-            .dependsOn(Arrays.asList(mongo2, mongo3))
-            .withExposedPorts(27017)
-            .withCommand("--replSet", "docker-rs")
-            .waitingFor(
-                    Wait.forLogMessage(".*waiting for connections on port.*", 1)
-            );
-    private static final int AWAIT_MASTER_NODE_ATTEMPTS = 29;
-    private static String MONGO_URL_1;
-    private static String MONGO_URL_2;
-    private static String MONGO_URL_3;
 
     @Autowired
     private WebTestClient webClient;
@@ -107,64 +64,6 @@ class ProductControllerITTest {
     private ProductDto productDto1;
     private ProductDto productDto2;
     private ProductDto productDto3;
-
-    @BeforeAll
-    static void setUpBeforeAll() throws IOException, InterruptedException {
-        MONGO_URL_1 = "host.docker.internal:" + mongo1.getMappedPort(27017);
-        MONGO_URL_2 = "host.docker.internal:" + mongo2.getMappedPort(27017);
-        MONGO_URL_3 = "host.docker.internal:" + mongo3.getMappedPort(27017);
-
-        log.debug(
-                mongo1.execInContainer(
-                        "mongo", "--eval", getMongoRsInitString()
-                ).getStdout()
-        );
-
-        log.debug("Awaiting mongo1 to be a master node for {} attempts", AWAIT_MASTER_NODE_ATTEMPTS);
-        val execResultWaitForMaster = mongo1.execInContainer(
-                "mongo", "--eval",
-                String.format(
-                        "var attempt = 0; " +
-                                "while" +
-                                "(db.runCommand( { isMaster: 1 } ).ismaster==false) " +
-                                "{ " +
-                                "if (attempt > %d) {quit(1);} " +
-                                "print('awaiting mongo1 to be a master node ' + attempt); sleep(1000);  attempt++; " +
-                                " }", AWAIT_MASTER_NODE_ATTEMPTS
-                )
-        );
-        log.debug(
-                execResultWaitForMaster.getStdout()
-        );
-
-        if (execResultWaitForMaster.getExitCode() == 1) {
-            val errorMessage = String.format(
-                    "The master node was not initialized in a set timeout: %d attempts",
-                    AWAIT_MASTER_NODE_ATTEMPTS
-            );
-            log.error(errorMessage);
-            throw new IllegalStateException(errorMessage);
-        }
-
-        log.debug(
-                mongo1.execInContainer("mongo", "--eval", "rs.status()").getStdout()
-        );
-    }
-
-    @NotNull
-    private static String getMongoRsInitString() {
-        return String.format(
-                "rs.initiate({\n" +
-                        "    \"_id\": \"docker-rs\",\n" +
-                        "    \"members\": [\n" +
-                        "        {\"_id\": 0, \"host\": \"%s\"},\n" +
-                        "        {\"_id\": 1, \"host\": \"%s\"},\n" +
-                        "        {\"_id\": 2, \"host\": \"%s\"}\n" +
-                        "    ]\n" +
-                        "});",
-                MONGO_URL_1, MONGO_URL_2, MONGO_URL_3
-        );
-    }
 
     @BeforeEach
     void setUpBeforeEach() {
@@ -258,9 +157,11 @@ class ProductControllerITTest {
      * 120589	Eau de Parfum	7	                3                    50      9                   7+9+3=19
      * 120590	Eau de Parfum	21	                5                    100     6                   21+6+5=32
      * 1647	    Eau de Parfum	79	                -                    50      -                   NON*
+     * <p>
      * article 1647 doesn't exist
      * <p>
-     * HttpStatus 500: Command failed with error 251 (NoSuchTransaction): 'Transaction 1 has been aborted.' on server localhost:27017. The full response is { "errorLabels" : ["TransientTransactionError"], "operationTime" : { "$timestamp" : { "t" : 1561124700, "i" : 2 } }, "ok" : 0.0, "errmsg" : "Transaction 1 has been aborted.", "code" : 251, "codeName" : "NoSuchTransaction", "$clusterTime" : { "clusterTime" : { "$timestamp" : { "t" : 1561124700, "i" : 2 } }, "signature" : { "hash" : { "$binary" : "AAAAAAAAAAAAAAAAAAAAAAAAAAA=", "$type" : "00" }, "keyId" : { "$numberLong" : "0" } } } }; nested exception is com.mongodb.MongoCommandException: Command failed with error 251 (NoSuchTransaction): 'Transaction 1 has been aborted.' on server localhost:27017. The full response is { "errorLabels" : ["TransientTransactionError"], "operationTime" : { "$timestamp" : { "t" : 1561124700, "i" : 2 } }, "ok" : 0.0, "errmsg" : "Transaction 1 has been aborted.", "code" : 251, "codeName" : "NoSuchTransaction", "$clusterTime" : { "clusterTime" : { "$timestamp" : { "t" : 1561124700, "i" : 2 } }, "signature" : { "hash" : { "$binary" : "AAAAAAAAAAAAAAAAAAAAAAAAAAA=", "$type" : "00" }, "keyId" : { "$numberLong" : "0" } } } }
+     * ACCEPTED: single thread
+     * CONFLICT, INTERNAL_SERVER_ERROR: multithreaded
      */
 
     @WithMockUser(
@@ -269,7 +170,7 @@ class ProductControllerITTest {
             authorities = SecurityConfig.WRITE_PRIVILEGE
     )
     @Test
-    void shouldNotPatchProductQuantity() {
+    void shouldTestConcurrentPatchProductQuantity() {
         //GIVEN
         insertMockProductsIntoDb(Arrays.asList(product1, product2));
 
@@ -351,7 +252,7 @@ class ProductControllerITTest {
         val exchange = webClient.post()
                 .uri(BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_STREAM_JSON)
                 .body(dtoFlux, ProductDto.class)
                 .exchange();
 
