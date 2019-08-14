@@ -29,8 +29,6 @@ env:
     - secure: u0isodbdjtSXAN/S6JQ1mf0cDOdEe7ZvoVOIFej4GHS7M3YqozDbFbV7Jt++PZnN8Lzt3Lu+9GFpQBqyj0WBzAQDwWz5nO9zFG439Wx1ZLMdxGhCI//U6CW1dBVZv9pTchUXwYuFLGB7Jb/OeDErrt4GOxI2U0WFNqmYO0M5UXPnYq0GgHiRPthrNUey6kGVerqqAURwp02zpK5+St5WTqPaBerTI/G+ZEruuYcnKO6o/2UAlfiRpZYJov1EqJ9BGsnFCesZbdAQBY0vrndAEH90vp07vWIWRXS3ALAXvT6m1XkE2Bw20TWldZ3vFr1jfJzzQhwr9OtwqGpfIT/wvgkduI0po9x3gMSaIozotT/DMkpraiZrOBoo1Ueo7iw654XkZCaGaa59zjvYiNtIQUiOx7R2HRI0VLchM2KY/AmHady5CjndwU1Bo7o7xn/tGMli7eKRc9sWdV3Qv71L6ucqu4u098RpOp/oJNXcWJVtls00SE1iABojwFL2gL/i9LDkGv5JCsNC0c1A1zD3pbBVf6sZ1oLgpgp6L801m+iNKxKPnFEogos7a4lEHQ2YsdH+A3KrwVgusG8JlJN99j4u+FKHMNrE+OsaG17eKQYLetzdx2VMfEz9z38hYkL90sxwbAfiECOAf+6vOfR36NWFOzU0BEXpAdZMen3pZJ8=
 
 before_install:
-  - echo "cpu count:"
-  - $(cat /proc/cpuinfo | grep processor | wc -l)
   - chmod +x gradlew;
 
   - if [ $MONGODB_MODE == 0 ] || [ $MONGODB_MODE == 3 ]; then
