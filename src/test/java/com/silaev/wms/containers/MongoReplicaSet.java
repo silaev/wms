@@ -1,34 +1,39 @@
 package com.silaev.wms.containers;
 
+import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.extension.AfterAllCallback;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 /**
  * Add `127.0.0.1 dockerhost` to the OS hosts
  */
 @Slf4j
-public abstract class MongoReplicaSet {
+@Builder
+public class MongoReplicaSet implements BeforeAllCallback, AfterAllCallback {
+    private final boolean useHost;
+
     private final static Network NETWORK = Network.newNetwork();
 
     /**
      * Move to host.docker.internal once https://github.com/docker/for-linux/issues/264 is resolved
      */
-    @Container
+
     private final static GenericContainer DOCKER_HOST = new GenericContainer<>("qoomon/docker-host:2.3.0")
             .withPrivilegedMode(true)
             .withNetwork(NETWORK)
             .withNetworkAliases("dockerhost");
 
-    @Container
+
     private final static GenericContainer MONGO_2 = new GenericContainer<>("s256/wms-mongo:4.0.10")
             .withNetwork(NETWORK)
             .withExposedPorts(27017)
@@ -37,7 +42,7 @@ public abstract class MongoReplicaSet {
                     Wait.forLogMessage(".*waiting for connections on port.*", 1)
             );
 
-    @Container
+
     private final static GenericContainer MONGO_3 = new GenericContainer<>("s256/wms-mongo:4.0.10")
             .withNetwork(NETWORK)
             .withExposedPorts(27017)
@@ -46,7 +51,6 @@ public abstract class MongoReplicaSet {
                     Wait.forLogMessage(".*waiting for connections on port.*", 1)
             );
 
-    @Container
     private final static GenericContainer MONGO_1 = new GenericContainer<>("s256/wms-mongo:4.0.10")
             .withNetwork(NETWORK)
             .dependsOn(Arrays.asList(MONGO_2, MONGO_3))
@@ -76,8 +80,13 @@ public abstract class MongoReplicaSet {
         );
     }
 
-    @BeforeAll
-    public static void beforeAll() throws IOException, InterruptedException {
+    @Override
+    public void beforeAll(ExtensionContext context) throws Exception {
+        DOCKER_HOST.start();
+        MONGO_2.start();
+        MONGO_3.start();
+        MONGO_1.start();
+
         val dockerHostName = "dockerhost";
 
         MONGO_URL_1 = String.format("%s:%d", dockerHostName, MONGO_1.getMappedPort(27017));
@@ -120,5 +129,20 @@ public abstract class MongoReplicaSet {
                 MONGO_1.execInContainer("mongo", "--eval", "rs.status()").getStdout()
         );
 
+    }
+
+    @Override
+    public void afterAll(ExtensionContext context) throws Exception {
+        DOCKER_HOST.stop();
+        MONGO_2.stop();
+        MONGO_3.stop();
+        MONGO_1.stop();
+    }
+
+    public String getMongoRsUrl() {
+        return String.format(
+                "spring.data.mongodb.uri: mongodb://%s,%s,%s/test?replicaSet=docker-rs",
+                MONGO_URL_1, MONGO_URL_2, MONGO_URL_3
+        );
     }
 }

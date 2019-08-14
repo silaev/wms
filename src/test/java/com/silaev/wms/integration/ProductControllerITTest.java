@@ -15,6 +15,7 @@ import lombok.val;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,7 +30,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
-import org.testcontainers.junit.jupiter.Testcontainers;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
@@ -48,9 +48,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ActiveProfiles("test")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @ContextConfiguration(initializers = ProductControllerITTest.Initializer.class)
-@Testcontainers
-class ProductControllerITTest extends MongoReplicaSet {
+class ProductControllerITTest {
     private static final String BASE_URL = ApiV1.BASE_URL;
+
+    /**
+     * must nor be private for Junit to access
+     */
+    @RegisterExtension
+    static MongoReplicaSet MONGO_REPLICA_SET = MongoReplicaSet.builder().useHost(true).build();
 
     @Autowired
     private WebTestClient webClient;
@@ -283,10 +288,7 @@ class ProductControllerITTest extends MongoReplicaSet {
     static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         @Override
         public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-            val mongoUrl = String.format(
-                    "spring.data.mongodb.uri: mongodb://%s,%s,%s/test?replicaSet=docker-rs",
-                    MONGO_URL_1, MONGO_URL_2, MONGO_URL_3
-            );
+            val mongoUrl = MONGO_REPLICA_SET.getMongoRsUrl();
             val values = TestPropertyValues.of(mongoUrl);
             values.applyTo(configurableApplicationContext);
             log.debug("mongoUrl: {}", mongoUrl);
