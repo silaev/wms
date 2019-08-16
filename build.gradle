@@ -58,8 +58,10 @@ dependencies {
     testCompile("org.mockito:mockito-junit-jupiter:${mockitoVersion}")
 
     testImplementation group: 'org.testcontainers', name: 'testcontainers', version: "${testcontainersVersion}"
-    testCompile("org.testcontainers:junit-jupiter:${testcontainersVersion}")
 
+    testCompile("org.yaml:snakeyaml")
+
+    //testCompile("org.testcontainers:junit-jupiter:${testcontainersVersion}")
     //compile group: 'io.projectreactor.tools', name: 'blockhound-junit-platform', version: '1.0.0.M4'
     //testRuntime group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.4.2'
     //compile group: 'io.projectreactor.tools', name: 'blockhound', version: '1.0.0.M4'

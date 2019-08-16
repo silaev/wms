@@ -1,11 +1,11 @@
 package com.silaev.wms.integration;
 
 import com.silaev.wms.annotation.version.ApiV1;
-import com.silaev.wms.containers.MongoReplicaSet;
 import com.silaev.wms.converter.ProductToProductDtoConverter;
 import com.silaev.wms.dao.ProductDao;
 import com.silaev.wms.dto.ProductDto;
 import com.silaev.wms.entity.Product;
+import com.silaev.wms.extension.MongoReplicaSetExtension;
 import com.silaev.wms.model.Brand;
 import com.silaev.wms.model.Size;
 import com.silaev.wms.security.SecurityConfig;
@@ -50,12 +50,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ContextConfiguration(initializers = ProductControllerITTest.Initializer.class)
 class ProductControllerITTest {
     private static final String BASE_URL = ApiV1.BASE_URL;
-
-    /**
-     * must nor be private for Junit to access
-     */
     @RegisterExtension
-    static MongoReplicaSet MONGO_REPLICA_SET = MongoReplicaSet.builder().useHost(true).build();
+    static MongoReplicaSetExtension MONGO_REPLICA_SET = MongoReplicaSetExtension.builder()
+            .replicaSetNumber(3)
+            .awaitMasterNodeAttempts(15)
+            .build();
 
     @Autowired
     private WebTestClient webClient;
@@ -288,10 +287,12 @@ class ProductControllerITTest {
     static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         @Override
         public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-            val mongoUrl = MONGO_REPLICA_SET.getMongoRsUrl();
-            val values = TestPropertyValues.of(mongoUrl);
-            values.applyTo(configurableApplicationContext);
-            log.debug("mongoUrl: {}", mongoUrl);
+            if (MONGO_REPLICA_SET.getIsEnabled()) {
+                val mongoUrl = MONGO_REPLICA_SET.getMongoRsUrl();
+                val values = TestPropertyValues.of(mongoUrl);
+                values.applyTo(configurableApplicationContext);
+                log.debug("mongoUrl: {}", mongoUrl);
+            }
         }
     }
 }
