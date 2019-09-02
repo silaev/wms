@@ -11,5 +11,4 @@
 
     <logger name="com.silaev.wms" level="DEBUG"/>
     <logger name="web" level="DEBUG"/>
-
 </configuration>

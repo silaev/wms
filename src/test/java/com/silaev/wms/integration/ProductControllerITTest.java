@@ -1,11 +1,12 @@
 package com.silaev.wms.integration;
 
+import com.silaev.mongoextension.MongoReplicaSetExtension;
 import com.silaev.wms.annotation.version.ApiV1;
 import com.silaev.wms.converter.ProductToProductDtoConverter;
+import com.silaev.wms.core.IntegrationTest;
 import com.silaev.wms.dao.ProductDao;
 import com.silaev.wms.dto.ProductDto;
 import com.silaev.wms.entity.Product;
-import com.silaev.wms.extension.MongoReplicaSetExtension;
 import com.silaev.wms.model.Brand;
 import com.silaev.wms.model.Size;
 import com.silaev.wms.security.SecurityConfig;
@@ -48,12 +49,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ActiveProfiles("test")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @ContextConfiguration(initializers = ProductControllerITTest.Initializer.class)
+@IntegrationTest
 class ProductControllerITTest {
     private static final String BASE_URL = ApiV1.BASE_URL;
     @RegisterExtension
     static MongoReplicaSetExtension MONGO_REPLICA_SET = MongoReplicaSetExtension.builder()
             .replicaSetNumber(3)
-            .awaitMasterNodeAttempts(15)
+            .mongoDockerImageName("mongo:4.2.0")
             .build();
 
     @Autowired
@@ -287,11 +289,10 @@ class ProductControllerITTest {
     static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         @Override
         public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-            if (MONGO_REPLICA_SET.getIsEnabled()) {
-                val mongoUrl = MONGO_REPLICA_SET.getMongoRsUrl();
-                val values = TestPropertyValues.of(mongoUrl);
-                values.applyTo(configurableApplicationContext);
-                log.debug("mongoUrl: {}", mongoUrl);
+            if (MONGO_REPLICA_SET.isEnabled()) {
+                TestPropertyValues.of(
+                        "spring.data.mongodb.uri: " + MONGO_REPLICA_SET.getMongoRsUrl()
+                ).applyTo(configurableApplicationContext);
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.silaev.wms.integration;
 
 import com.silaev.wms.annotation.version.ApiV1;
+import com.silaev.wms.core.IntegrationTest;
 import com.silaev.wms.dto.ProductDto;
 import com.silaev.wms.security.SecurityConfig;
 import com.silaev.wms.service.ProductService;
@@ -23,6 +24,7 @@ import reactor.core.publisher.Flux;
 )
 @Import(value = SecurityConfig.class)
 @ActiveProfiles("test")
+@IntegrationTest
 class SecurityITTest {
     private static final String BASE_URL = ApiV1.BASE_URL;
 

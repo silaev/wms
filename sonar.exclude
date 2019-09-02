@@ -2,4 +2,4 @@ com/silaev/wms/entity/**
 com/silaev/wms/dto/**
 com/silaev/wms/config/**
 com/silaev/wms/exception/**
-com/silaev/wms/model
+com/silaev/wms/model/**
