@@ -1,5 +1,5 @@
 FROM bellsoft/liberica-openjdk-alpine:11
 
 COPY . .
-
-CMD ["./gradlew", "integrationTest", "-DmongoReplicaSetProperties.enabled=false"]
+RUN chmod +x gradlew
+CMD ["sh", "-c", "./gradlew integrationTest -DmongoReplicaSetProperties.enabled=false"]

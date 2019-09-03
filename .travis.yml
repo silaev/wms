@@ -113,6 +113,9 @@ script:
     docker-compose -f docker-compose-init-mongo-rs.yml up -d;
     docker wait run-it;
     docker logs run-it;
+    if [[ $(docker inspect run-it --format='{{.State.ExitCode}}') == '1' ]]; then
+    exit 1;
+    fi
     ;;
 
     1)
