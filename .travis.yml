@@ -41,6 +41,7 @@ before_install:
     chmod +x docker-compose;
     sudo mv docker-compose /usr/local/bin;
 
+    if [ $MONGODB_MODE != -1 ]; then
     echo "$DOCKER_PASSWORD" | docker login -u "s256" --password-stdin;
 
     chmod +x tools/docker_image_tag_exists.sh;
@@ -52,6 +53,9 @@ before_install:
     docker build --build-arg MONGO_VERSION=${IMG_TAG} -t s256/wms-mongo:${IMG_TAG} -f Dockerfile.mongo .;
     docker push s256/wms-mongo:${IMG_TAG};
     fi
+
+    fi
+
     fi
 
   - case "${MONGODB_MODE}" in
