@@ -15,15 +15,14 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @EnableWebFluxSecurity
 @EnableReactiveMethodSecurity
 public class SecurityConfig {
-
     public static final String READ_PRIVILEGE = "READ_PRIVILEGE";
     public static final String WRITE_PRIVILEGE = "WRITE_PRIVILEGE";
     public static final String ADMIN_NAME = "admin";
     public static final String ADMIN_PAS = "admin";
-    public static final String ADMIN_ROLE = "ADMIN";
-    public static final String USER_NAME = "user";
-    public static final String USER_PAS = "user";
-    public static final String USER_ROLE = "USER";
+    private static final String ADMIN_ROLE = "ADMIN";
+    private static final String USER_NAME = "user";
+    private static final String USER_PAS = "user";
+    private static final String USER_ROLE = "USER";
 
     @Bean
     SecurityWebFilterChain springWebFilterChain(ServerHttpSecurity http) {
@@ -40,7 +39,6 @@ public class SecurityConfig {
                 .and()
                 .csrf().disable()
                 .build();
-
     }
 
     @Bean
