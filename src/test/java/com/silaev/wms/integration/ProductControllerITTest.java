@@ -291,7 +291,7 @@ class ProductControllerITTest {
         public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
             if (MONGO_REPLICA_SET.isEnabled()) {
                 TestPropertyValues.of(
-                        "spring.data.mongodb.uri: " + MONGO_REPLICA_SET.getMongoRsUrl()
+                        String.format("spring.data.mongodb.uri: %s", MONGO_REPLICA_SET.getMongoRsUrl())
                 ).applyTo(configurableApplicationContext);
             }
         }

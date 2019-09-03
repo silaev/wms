@@ -67,8 +67,8 @@ dependencies {
     testCompile("org.junit.jupiter:junit-jupiter-params:${junitVersion}")
     testRuntime("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 
-    testImplementation("com.silaev.junit-extension:mongodb-replica-set:0.1.0")
-    //testImplementation("com.github.silaev:mongodb-replica-set-extension:bf7a166")
+    testImplementation("com.github.silaev:mongodb-replica-set-extension:0.1.0")
+    //testImplementation("com.silaev.junit-extension:mongodb-replica-set:0.1.0")
 }
 
 test {
@@ -103,6 +103,7 @@ task integrationTest(type: Test) { Test task ->
 
     check.dependsOn integrationTest
     integrationTest.mustRunAfter test
+    finalizedBy jacocoTestReport
 }
 
 wrapper {
