@@ -54,8 +54,10 @@ class ProductControllerITTest {
     private static final String BASE_URL = ApiV1.BASE_URL;
     @RegisterExtension
     static MongoReplicaSetExtension MONGO_REPLICA_SET = MongoReplicaSetExtension.builder()
-            .replicaSetNumber(3)
-            .mongoDockerImageName("mongo:4.2.0")
+            //.replicaSetNumber(3)
+            //.mongoDockerImageName("mongo:4.2.0")
+            //.addArbiter(true)
+            //.awaitNodeInitAttempts(30)
             .build();
 
     @Autowired

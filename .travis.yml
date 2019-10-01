@@ -11,7 +11,7 @@ addons:
     - mongo1
     - mongo2
     - mongo3
-    - dockerhost
+    #- dockerhost
   apt:
     packages:
       - docker-ce
