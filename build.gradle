@@ -29,9 +29,9 @@ targetCompatibility = 1.11
 
 repositories {
     mavenCentral()
-    jcenter()
-    maven { url "https://jitpack.io" }
-    mavenLocal()
+    //jcenter()
+    //maven { url "https://jitpack.io" }
+    //mavenLocal()
 }
 
 lombok {
@@ -43,7 +43,7 @@ springBoot {
 }
 
 configurations.all {
-    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    resolutionStrategy { cacheChangingModulesFor 0, 'seconds' }
 }
 
 ext['mockito.version'] = "${mockitoVersion}"
@@ -71,14 +71,13 @@ dependencies {
     testCompile("com.github.silaev:mongodb-replica-set:0.2.0")
 }
 
-test {
-    failFast = true
-}
-
 tasks.withType(Test) { Test task ->
     task.useJUnitPlatform { JUnitPlatformOptions options ->
         options.excludeTags 'integration-test'
     }
+
+    task.failFast = true
+
     testLogging.showStandardStreams = true
     testLogging.exceptionFormat = 'full'
 
@@ -99,6 +98,8 @@ task integrationTest(type: Test) { Test task ->
         println("Detected test system properties: " + task.systemProperties)
     }
 
+    task.failFast = true
+
     testLogging.showStandardStreams = true
     testLogging.exceptionFormat = 'full'
 
@@ -108,7 +109,7 @@ task integrationTest(type: Test) { Test task ->
 }
 
 wrapper {
-    gradleVersion = '5.4.1'
+    gradleVersion = '5.6.2'
     distributionType = Wrapper.DistributionType.ALL
 }
 
@@ -132,8 +133,7 @@ jacocoTestReport {
 
     afterEvaluate {
         classDirectories.from = files(classDirectories.files.collect {
-            fileTree(dir: it,
-                    exclude: getSonarExclusions())
+            fileTree(dir: it, exclude: getSonarExclusions())
         })
     }
 }
@@ -150,8 +150,7 @@ jacocoTestCoverageVerification {
 
     afterEvaluate {
         classDirectories.from = files(classDirectories.files.collect {
-            fileTree(dir: it,
-                    exclude: getSonarExclusions())
+            fileTree(dir: it, exclude: getSonarExclusions())
         })
     }
 }

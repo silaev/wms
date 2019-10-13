@@ -1,6 +1,6 @@
 package com.silaev.wms.integration;
 
-import com.silaev.mongoextension.MongoReplicaSetExtension;
+import com.github.silaev.mongodb.replicaset.MongoDbReplicaSet;
 import com.silaev.wms.annotation.version.ApiV1;
 import com.silaev.wms.converter.ProductToProductDtoConverter;
 import com.silaev.wms.core.IntegrationTest;
@@ -13,10 +13,11 @@ import com.silaev.wms.security.SecurityConfig;
 import com.silaev.wms.testutil.ProductUtil;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -52,14 +53,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @IntegrationTest
 class ProductControllerITTest {
     private static final String BASE_URL = ApiV1.BASE_URL;
-    @RegisterExtension
-    static MongoReplicaSetExtension MONGO_REPLICA_SET = MongoReplicaSetExtension.builder()
-            //.replicaSetNumber(3)
-            //.mongoDockerImageName("mongo:4.2.0")
+    private static final MongoDbReplicaSet MONGO_REPLICA_SET = MongoDbReplicaSet.builder()
+            .replicaSetNumber(3)
+            .mongoDockerImageName("mongo:4.2.0")
             //.addArbiter(true)
             //.awaitNodeInitAttempts(30)
             .build();
-
     @Autowired
     private WebTestClient webClient;
     @Autowired
@@ -72,6 +71,16 @@ class ProductControllerITTest {
     private ProductDto productDto1;
     private ProductDto productDto2;
     private ProductDto productDto3;
+
+    @BeforeAll
+    static void setUpAll() {
+        MONGO_REPLICA_SET.start();
+    }
+
+    @AfterAll
+    static void tearDownAll() {
+        MONGO_REPLICA_SET.stop();
+    }
 
     @BeforeEach
     void setUpBeforeEach() {
@@ -293,7 +302,7 @@ class ProductControllerITTest {
         public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
             if (MONGO_REPLICA_SET.isEnabled()) {
                 TestPropertyValues.of(
-                        String.format("spring.data.mongodb.uri: %s", MONGO_REPLICA_SET.getMongoRsUrl())
+                        String.format("spring.data.mongodb.uri: %s", MONGO_REPLICA_SET.getReplicaSetUrl())
                 ).applyTo(configurableApplicationContext);
             }
         }
