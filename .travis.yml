@@ -19,7 +19,7 @@ addons:
 env:
   matrix:
     # 0 - triple replica set and init in compose (no need for adding hosts)
-    - MONGODB_MODE=0 IMG_TAG=4.0.10 DOCKER_COMPOSE_VERSION=1.23.2
+    #- MONGODB_MODE=0 IMG_TAG=4.0.10 DOCKER_COMPOSE_VERSION=1.23.2
     # 3 - triple replica set and ext init (needs adding mongo1, mongo2, mongo3 to hosts)
     - MONGODB_MODE=3 IMG_TAG=4.0.10 DOCKER_COMPOSE_VERSION=1.23.2
     # 1 - single replica set (needs adding hosts)
