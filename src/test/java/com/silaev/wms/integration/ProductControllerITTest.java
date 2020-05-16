@@ -54,11 +54,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class ProductControllerITTest {
     private static final String BASE_URL = ApiV1.BASE_URL;
     private static final MongoDbReplicaSet MONGO_REPLICA_SET = MongoDbReplicaSet.builder()
-            .replicaSetNumber(3)
-            .mongoDockerImageName("mongo:4.2.0")
-            //.addArbiter(true)
-            //.awaitNodeInitAttempts(30)
+            .mongoDockerImageName("mongo:4.2.6")
             .build();
+
     @Autowired
     private WebTestClient webClient;
     @Autowired
