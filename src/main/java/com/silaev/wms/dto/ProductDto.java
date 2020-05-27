@@ -17,21 +17,21 @@ import java.math.BigInteger;
 @EqualsAndHashCode(of = {"article", "size"})
 public class ProductDto {
 
-    @NotNull
-    private Long article;
+  @NotNull
+  private Long article;
 
-    @NotNull
-    private String name;
+  @NotNull
+  private String name;
 
-    @NotNull
-    private String brand;
+  @NotNull
+  private String brand;
 
-    @NotNull
-    private BigDecimal price;
+  @NotNull
+  private BigDecimal price;
 
-    @NotNull
-    private Integer size;
+  @NotNull
+  private Integer size;
 
-    @NotNull
-    private BigInteger quantity;
+  @NotNull
+  private BigInteger quantity;
 }

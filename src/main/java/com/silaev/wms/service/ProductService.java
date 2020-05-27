@@ -9,11 +9,11 @@ import java.math.BigInteger;
 
 
 public interface ProductService {
-    Flux<ProductDto> findProductsByNameOrBrand(String name, Brand brand);
+  Flux<ProductDto> findProductsByNameOrBrand(String name, Brand brand);
 
-    Flux<Product> createProduct(Flux<ProductDto> productDto, String userName);
+  Flux<Product> createProduct(Flux<ProductDto> productDto, String userName);
 
-    Flux<Product> findAll();
+  Flux<Product> findAll();
 
-    Flux<ProductDto> findLastProducts(BigInteger lastSize);
+  Flux<ProductDto> findLastProducts(BigInteger lastSize);
 }

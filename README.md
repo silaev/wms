@@ -3,29 +3,22 @@
 [![codecov](https://codecov.io/gh/silaev/wms/branch/master/graph/badge.svg)](https://codecov.io/gh/silaev/wms)
 
 #### Prerequisite
-- Java 11
-- Docker v18.09.2 (was tested on this version) 
-- docker-compose v1.23.2 (compose file version: "3.7", was tested on this version) 
-(if you'd prefer just Docker, see `Installing a 3 replica set MongoDB via just Docker`)
-
-Install a 3 replica set MongoDB via Docker-Compose, run in a terminal: 
-- docker-compose -f docker-compose.yml up -d
-- docker-compose exec mongo1 /bin/sh -c "mongo --port 50001 < /scripts/init.js"
-See .travis.yml for more details
+- Java 8
+- Docker (was tested on version 18.09.2) 
  
 #### General info
-The application lets:
+The application allows:
 - create new products with article verification 
     (duplicate key error collection: wms.product index: article occurs while 
-    trying to insert products with identical id);
+    trying to insert products with an identical id);
 - find products dto(user's representation) by either name or brand (full equality, may be soften in ProductDao
     via clear DSL);
 - find all products (entity representation);
 - upload xlsx file (other formats are not currently supported) in order to update current product quantities.
-    Matching is done by article and size. The products that are supposed to 
-    be patched but not present in MongoDB, are properly logged. 
+    Matching is done by article and size. The app informs about inconsistencies between the products that are supposed to 
+    be patched and MongoDB. 
     After uploading, files are kept in a storage.bulk-upload-path/userName folder
-    until he next call is performed. 
+    and then removed when the next call is performed. 
 - download product in xlsx format is not currently supported.     
           
 #### Requirements to consider before using the app 
@@ -41,16 +34,13 @@ see more in SecurityConfig.java.
 1. Recon the use of Spring Security Oath2.
 2. Draw attention to the limitation of user space on the server. Frankly speaking,
 server space is a limited resource.
-3. Modern web browsers prohibit HTTP in favour of HTTPS. That is why, make use of
-Spring config files (server.ssl.key*) and a proper type of certificate
-to satisfy modern constrains. Whereas it makes sense for front-end applications, it
-may not be relevant to REST API as used here. Nevertheless, you should NEVER transmit 
-sensitive data such as tokens over a non-HTTPS connection.
-Remember, Man in the middle attacks are real.
-4. Employ MongoDB transaction support for patching products quantity to 
-avoid inconsistent state.
-5. Optimistic Locking requires to set the WriteConcern to ACKNOWLEDGED.
-Otherwise OptimisticLockingFailureException can be silently swallowed.
+
+### Additional info
+#### Install a 3 replica set MongoDB via Docker-Compose
+Install a 3 replica set MongoDB via Docker-Compose, run in a terminal: 
+- docker-compose -f docker-compose.yml up -d
+- docker-compose exec mongo1 /bin/sh -c "mongo --port 50001 < /scripts/init.js"
+See .travis.yml for more details
 
 #### Installing a 3 replica set MongoDB via just Docker (without compose)
 - Set mongodb url in Spring boot app 

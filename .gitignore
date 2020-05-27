@@ -21,6 +21,7 @@
 *.war
 *.ear
 *.zip
+!products_1M.zip
 *.tar.gz
 *.rar
 # except from Gradle wrapper jar file that is useful after
@@ -47,3 +48,5 @@ hs_err_pid*
 *.log
 /logs/
 .codecov.yml
+
+/files-test/

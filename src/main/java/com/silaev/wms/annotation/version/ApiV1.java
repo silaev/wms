@@ -16,8 +16,8 @@ import java.lang.annotation.Target;
 @Component
 @RequestMapping(ApiV1.BASE_URL)
 public @interface ApiV1 {
-    String BASE_URL = "/api/v1/product";
+  String BASE_URL = "/api/v1/product";
 
-    @AliasFor(annotation = Component.class)
-    String value() default "";
+  @AliasFor(annotation = Component.class)
+  String value() default "";
 }

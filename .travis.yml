@@ -7,11 +7,11 @@ services: docker
 dist: bionic
 
 addons:
-  hosts:
-    - mongo1
-    - mongo2
-    - mongo3
-    - dockerhost
+  #hosts:
+    #- mongo1
+    #- mongo2
+    #- mongo3
+    #- dockerhost
   apt:
     packages:
       - docker-ce
@@ -21,9 +21,9 @@ env:
     # 0 - triple replica set and init in compose (no need for adding hosts)
     #- MONGODB_MODE=0 IMG_TAG=4.0.10 DOCKER_COMPOSE_VERSION=1.23.2
     # 3 - triple replica set and ext init (needs adding mongo1, mongo2, mongo3 to hosts)
-    - MONGODB_MODE=3 IMG_TAG=4.0.10 DOCKER_COMPOSE_VERSION=1.23.2
+    #- MONGODB_MODE=3 IMG_TAG=4.0.10 DOCKER_COMPOSE_VERSION=1.23.2
     # 1 - single replica set (needs adding hosts)
-    - MONGODB_MODE=1 IMG_TAG=4.0.10
+    #- MONGODB_MODE=1 IMG_TAG=4.0.10
     # -1 - run a replica set via mongodb-replica-set-extension (needs adding dockerhost to hosts)
     - MONGODB_MODE=-1
   global:
@@ -100,7 +100,7 @@ before_install:
     esac
 
 after_success:
-  - if [ $TRAVIS_BRANCH == 'master' ]; then
+  - if [ $TRAVIS_PULL_REQUEST == 'false' ]; then
     echo "*** send stats to codecov";
     bash <(curl -s https://codecov.io/bash);
     fi
@@ -130,7 +130,7 @@ script:
 
     -1)
     echo "*** MONGODB_MODE $MONGODB_MODE";
-    ./gradlew clean build;
+    travis_wait 30 ./gradlew clean build;
     ;;
     esac
 

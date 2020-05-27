@@ -6,8 +6,8 @@ import java.beans.PropertyEditorSupport;
 
 public class StringToBrandConverter extends PropertyEditorSupport {
 
-    @Override
-    public void setAsText(String text) {
-        setValue(Brand.byName(text));
-    }
+  @Override
+  public void setAsText(String text) {
+    setValue(Brand.byName(text));
+  }
 }

@@ -6,6 +6,11 @@ spring:
   data:
     mongodb:
       uri: mongodb://mongo1:50001,mongo2:50002,mongo3:50003/test?replicaSet=docker-rs
+      auto-index-creation: true
 
 storage:
   bulk-upload-path: uploads/files-test
+
+upload-file:
+  max-disk-usage-per-part: 50000
+  max-parts: 2

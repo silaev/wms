@@ -8,19 +8,19 @@ import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class BigDecimalToDoubleConverterTest {
-    private final BigDecimalToDoubleConverter converter =
-            new BigDecimalToDoubleConverter();
+  private final BigDecimalToDoubleConverter converter =
+    new BigDecimalToDoubleConverter();
 
-    @Test
-    void shouldConvertBigDecimalToDoubleTest() {
-        //GIVEN
-        BigDecimal bigDecimalValue = BigDecimal.TEN;
-        Double doubleValueExpected = Double.valueOf("10");
+  @Test
+  void shouldConvertBigDecimalToDoubleTest() {
+    //GIVEN
+    BigDecimal bigDecimalValue = BigDecimal.TEN;
+    Double doubleValueExpected = Double.valueOf("10");
 
-        //WHEN
-        Double doubleValue = converter.convert(bigDecimalValue);
+    //WHEN
+    Double doubleValue = converter.convert(bigDecimalValue);
 
-        //THEN
-        assertEquals(doubleValueExpected, doubleValue);
-    }
+    //THEN
+    assertEquals(doubleValueExpected, doubleValue);
+  }
 }

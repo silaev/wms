@@ -11,15 +11,15 @@ import java.util.Arrays;
 @Configuration
 public class MangoDbCustomConversions {
 
-    @Bean
-    public MongoCustomConversions mongoCustomConversions() {
-        return new MongoCustomConversions(Arrays.asList(
-                //double, Double, float, Float are native
-                new BigDecimalToDoubleConverter(),
+  @Bean
+  public MongoCustomConversions mongoCustomConversions() {
+    return new MongoCustomConversions(Arrays.asList(
+      //double, Double, float, Float are native
+      new BigDecimalToDoubleConverter(),
 
-                //int, Integer, short, Short are native 32-bit integer
-                //in case of extension make use of Long that is native 64-bit integer
-                new BigIntegerToIntegerConverter()
-        ));
-    }
+      //int, Integer, short, Short are native 32-bit integer
+      //in case of extension make use of Long that is native 64-bit integer
+      new BigIntegerToIntegerConverter()
+    ));
+  }
 }

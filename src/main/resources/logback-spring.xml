@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
-    <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}}/spring.log}"/>
-    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
-    <include resource="org/springframework/boot/logging/logback/file-appender.xml"/>
-    <root level="INFO">
-        <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="FILE"/>
-    </root>
+  <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+  <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}}/spring.log}"/>
+  <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+  <include resource="org/springframework/boot/logging/logback/file-appender.xml"/>
+  <root level="INFO">
+    <appender-ref ref="CONSOLE"/>
+    <appender-ref ref="FILE"/>
+  </root>
 
-    <logger name="com.silaev.wms" level="DEBUG"/>
-    <logger name="web" level="DEBUG"/>
+  <logger name="com.silaev.wms" level="DEBUG"/>
+  <logger name="web" level="DEBUG"/>
+  <logger name="org.testcontainers" level="INFO"/>
+  <logger name="com.github.dockerjava" level="WARN"/>
+  <logger name="org.springframework.data.mongodb" level="DEBUG"/>
+  <logger name="com.mongodb" level="DEBUG"/>
+  <logger name="reactor.tools" level="DEBUG"/>
 </configuration>
