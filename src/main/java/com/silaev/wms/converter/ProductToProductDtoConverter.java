@@ -6,20 +6,22 @@ import com.silaev.wms.model.Brand;
 import com.silaev.wms.model.Size;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
+import reactor.util.annotation.NonNull;
 
 import java.util.Optional;
 
 @Component
 public class ProductToProductDtoConverter implements Converter<Product, ProductDto> {
-    @Override
-    public ProductDto convert(Product source) {
-        return ProductDto.builder()
-                .article(source.getArticle())
-                .brand(Optional.ofNullable(source.getBrand()).map(Brand::getBrandName).orElse(null))
-                .name(source.getName())
-                .size(Optional.ofNullable(source.getSize()).map(Size::getSizeInteger).orElse(null))
-                .price(source.getPrice())
-                .quantity(source.getQuantity())
-                .build();
-    }
+  @Override
+  @NonNull
+  public ProductDto convert(Product source) {
+    return ProductDto.builder()
+      .article(source.getArticle())
+      .brand(Optional.ofNullable(source.getBrand()).map(Brand::getBrandName).orElse(null))
+      .name(source.getName())
+      .size(Optional.ofNullable(source.getSize()).map(Size::getSizeInteger).orElse(null))
+      .price(source.getPrice())
+      .quantity(source.getQuantity())
+      .build();
+  }
 }

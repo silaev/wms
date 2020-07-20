@@ -1,18 +1,20 @@
 <configuration>
 
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <!-- encoders are assigned the type
-             ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} %-5level %logger - %msg%n</pattern>
-        </encoder>
-    </appender>
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <!-- encoders are assigned the type
+         ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} %-5level %logger - %msg%n</pattern>
+    </encoder>
+  </appender>
 
-    <root level="INFO">
-        <appender-ref ref="STDOUT"/>
-    </root>
+  <root level="INFO">
+    <appender-ref ref="STDOUT"/>
+  </root>
 
-    <logger name="com.github.silaev.mongodb.replicaset" level="DEBUG"/>
-    <logger name="org.testcontainers" level="INFO"/>
-    <logger name="com.github.dockerjava" level="WARN"/>
+  <logger name="com.silaev.wms" level="DEBUG"/>
+  <logger name="org.testcontainers" level="INFO"/>
+  <logger name="com.github.dockerjava" level="WARN"/>
+  <logger name="org.springframework.data.mongodb" level="DEBUG"/>
+  <logger name="com.mongodb" level="DEBUG"/>
 </configuration>
