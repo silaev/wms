@@ -1,5 +1,5 @@
 # HTTP API for small WMS (warehouse management system) based on Spring boot 2 Reactive WebFlux and MongoDB 4 demonstrating the use of document transactions.  
-[![Build Status](https://travis-ci.org/silaev/wms.svg?branch=master)](https://travis-ci.org/silaev/wms)
+![Java CI with Gradle](https://github.com/silaev/wms/workflows/Java%20CI%20with%20Gradle/badge.svg?branch=master)
 [![codecov](https://codecov.io/gh/silaev/wms/branch/master/graph/badge.svg)](https://codecov.io/gh/silaev/wms)
 
 #### Prerequisite
