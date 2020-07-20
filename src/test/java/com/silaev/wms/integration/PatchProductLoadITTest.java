@@ -99,7 +99,7 @@ class PatchProductLoadITTest {
     final long totalQuantity = 500472368779L;
     final List<Document> products = getDocuments(count);
 
-    TransactionUtil.setTransactionLifetimeLimitSeconds(600, MONGO_DB_CONTAINER.getReplicaSetUrl());
+    TransactionUtil.setTransactionLifetimeLimitSeconds(900, MONGO_DB_CONTAINER.getReplicaSetUrl());
 
     StepVerifier.create(
       reactiveMongoTemplate.remove(new Query(), Product.COLLECTION_NAME)
@@ -128,7 +128,7 @@ class PatchProductLoadITTest {
     StepVerifier.create(getTotalQuantity())
       .assertNext(t -> assertEquals(totalQuantity * 2, t))
       .verifyComplete();
-    log.debug("============= shouldPatchProductQuantityBigFile elapsed {}s =============", Duration.between(start, Instant.now()).toMillis() / 100);
+    log.debug("============= shouldPatchProductQuantityBigFile elapsed {}s =============", Duration.between(start, Instant.now()).toMinutes());
   }
 
   @SneakyThrows
