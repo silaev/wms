@@ -14,3 +14,4 @@ storage:
 upload-file:
   max-disk-usage-per-part: 40000000
   max-parts: 1
+  bigFileSizeThreshold: 100000

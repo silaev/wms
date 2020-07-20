@@ -37,7 +37,6 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class UploadProductServiceImpl implements UploadProductService {
-  public static final int FILE_SIZE_THRESHOLD = 100000;
   private final ProductPatcherDao productPatcherService;
   private final ExcelFileDao excelFileDao;
   private final ProductDao productDao;
@@ -45,6 +44,9 @@ public class UploadProductServiceImpl implements UploadProductService {
 
   @Value("${storage.bulk-upload-path}")
   private String pathToStorage;
+
+  @Value("${upload-file.bigFileSizeThreshold}")
+  private int bigFileSizeThreshold;
 
   public Flux<FileUploadDto> patchProductQuantity(
     final Flux<FilePart> files,
@@ -89,7 +91,7 @@ public class UploadProductServiceImpl implements UploadProductService {
   ) {
     return Mono.fromCallable(() -> Files.size(path))
       .flatMap(size -> {
-        if (size > FILE_SIZE_THRESHOLD) {
+        if (size >= bigFileSizeThreshold) {
           return processBigExcelFile(fileName, userName);
         } else {
           return processSmallExcelFile(fileName, userName);
