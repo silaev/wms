@@ -30,8 +30,8 @@ public class ProductAndUserNameToUpdateOneModelConverter implements
 
     return new UpdateOneModel<>(
       Filters.and(
-        Filters.eq(Product.ARTICLE_DB_FIELD, product.getArticle()),
-        Filters.eq(Product.SIZE_DB_FIELD, product.getSize().name())
+        Filters.eq(Product.SIZE_DB_FIELD, product.getSize().name()),
+        Filters.eq(Product.ARTICLE_DB_FIELD, product.getArticle())
       ),
       Document.parse(
         String.format(
