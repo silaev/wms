@@ -186,7 +186,10 @@ class ProductControllerITTest {
   @Test
   void shouldPatchProductQuantityConcurrently() {
     //GIVEN
-    TransactionUtil.setMaxTransactionLockRequestTimeoutMillis(20, MONGO_DB_CONTAINER.getReplicaSetUrl());
+    TransactionUtil.setMaxTransactionLockRequestTimeoutMillis(
+      20,
+      MONGO_DB_CONTAINER.getReplicaSetUrl()
+    );
     insertMockProductsIntoDb(Flux.just(product1, product2));
     final String fileName1 = "products1.xlsx";
     final String fileName2 = "products2.xlsx";
@@ -228,7 +231,10 @@ class ProductControllerITTest {
         .or(arrayContaining(expected120589T2, expected120590T2))
         .or(arrayContaining(expected120589Sum, expected120590Sum))
     );
-    TransactionUtil.setMaxTransactionLockRequestTimeoutMillis(5, MONGO_DB_CONTAINER.getReplicaSetUrl());
+    TransactionUtil.setMaxTransactionLockRequestTimeoutMillis(
+      5,
+      MONGO_DB_CONTAINER.getReplicaSetUrl()
+    );
   }
 
   /**

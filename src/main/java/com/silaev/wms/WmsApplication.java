@@ -26,7 +26,7 @@ public class WmsApplication implements WebFluxConfigurer {
   }
 
   /**
-   * Taken from https://stackoverflow.com/a/59538777/11773824
+   * Taken from <a href=https://stackoverflow.com/a/59538777/11773824">Spring WebFlux: set max file(s) size for uploading files</a>
    *
    * @param configurer
    */
@@ -42,5 +42,4 @@ public class WmsApplication implements WebFluxConfigurer {
 
     configurer.defaultCodecs().multipartReader(multipartReader);
   }
-
 }
