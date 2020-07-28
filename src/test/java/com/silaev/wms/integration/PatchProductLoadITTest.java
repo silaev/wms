@@ -81,7 +81,9 @@ class PatchProductLoadITTest {
 
   @AfterAll
   static void tearDownAll() {
-    MONGO_DB_CONTAINER.stop();
+    if (!MONGO_DB_CONTAINER.isShouldBeReused()) {
+      MONGO_DB_CONTAINER.stop();
+    }
   }
 
   @WithMockUser(
