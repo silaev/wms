@@ -98,11 +98,6 @@ class ProductControllerITTest {
     productDto3 = productConverter.convert(product3);
   }
 
-  @AfterEach
-  void tearDown() {
-    StepVerifier.create(productDao.deleteAll()).verifyComplete();
-  }
-
   @WithMockUser(authorities = SecurityConfig.READ_PRIVILEGE)
   @Test
   void shouldFindProductsByNameOrBrand() {
@@ -293,6 +288,7 @@ class ProductControllerITTest {
   @Test
   void shouldCreateProducts() {
     //GIVEN
+    StepVerifier.create(productDao.deleteAll()).verifyComplete();
     val dtoFlux = Flux.just(productDto1, productDto2);
 
     //WHEN
