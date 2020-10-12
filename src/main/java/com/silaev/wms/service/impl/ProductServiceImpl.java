@@ -32,7 +32,6 @@ public class ProductServiceImpl implements ProductService {
       .map(dto -> toProduct(dto, userName))
       .flatMap(productDao::insert)
       .map(productDtoConverter::convert);
-
   }
 
   private Product toProduct(ProductDto productDto, String userName) {
