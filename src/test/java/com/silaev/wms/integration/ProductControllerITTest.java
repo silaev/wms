@@ -16,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,7 +61,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class ProductControllerITTest {
   private static final String BASE_URL = ApiV1.BASE_URL;
   private static final MongoDBContainer MONGO_DB_CONTAINER =
-    new MongoDBContainer("mongo:4.2.8");
+    new MongoDBContainer("mongo:4.4.1");
   private final ProductToProductDtoConverter productConverter = new ProductToProductDtoConverter();
   @Autowired
   private WebTestClient webClient;
@@ -138,8 +137,8 @@ class ProductControllerITTest {
     exchange
       .expectStatus()
       .isOk()
-      .expectBodyList(Product.class)
-      .contains(product1, product2, product3)
+      .expectBodyList(ProductDto.class)
+      .contains(productDto1, productDto2, productDto3)
       .hasSize(3);
   }
 
@@ -302,8 +301,8 @@ class ProductControllerITTest {
     //THEN
     exchange.expectStatus()
       .isCreated()
-      .expectBodyList(Product.class)
-      .contains(product1, product2)
+      .expectBodyList(ProductDto.class)
+      .contains(productDto1, productDto2)
       .hasSize(2);
   }
 

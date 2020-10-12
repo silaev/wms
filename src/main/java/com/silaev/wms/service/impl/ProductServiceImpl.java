@@ -27,19 +27,23 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public Flux<Product> createProduct(Flux<ProductDto> productDto, String userName) {
+  public Flux<ProductDto> createProduct(Flux<ProductDto> productDto, String userName) {
     return productDto
-      .map(productConverter::convert)
-      .map(p -> {
-        p.setCreatedBy(userName);
-        return p;
-      })
-      .flatMap(productDao::insert);
+      .map(dto -> toProduct(dto, userName))
+      .flatMap(productDao::insert)
+      .map(productDtoConverter::convert);
+
+  }
+
+  private Product toProduct(ProductDto productDto, String userName) {
+    final Product product = productConverter.convert(productDto);
+    product.setCreatedBy(userName);
+    return product;
   }
 
   @Override
-  public Flux<Product> findAll() {
-    return productDao.findAll();
+  public Flux<ProductDto> findAll() {
+    return productDao.findAll().map(productDtoConverter::convert);
   }
 
   @Override

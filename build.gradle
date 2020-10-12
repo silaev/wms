@@ -4,7 +4,7 @@ buildscript {
     ext {
         mockitoVersion = '3.3.3'
         junitVersion = '5.6.2'
-        testcontainersVersion = '1.14.3'
+        testcontainersVersion = '1.15.0-rc2'
     }
 }
 
@@ -28,7 +28,7 @@ repositories {
 
     //jcenter()
 
-    //maven { url "https://jitpack.io" }
+    maven { url "https://jitpack.io" }
 
     //mavenLocal()
 }
@@ -51,7 +51,8 @@ configurations.all {
 //ext['mongodb.version'] = "4.0.2"
 
 dependencies {
-    testImplementation(platform("org.testcontainers:testcontainers-bom:${testcontainersVersion}"))
+    //TODO: bring back after TC' release to support MongoDB 4.4
+    //testImplementation(platform("org.testcontainers:testcontainers-bom:${testcontainersVersion}"))
     testImplementation(platform("org.junit:junit-bom:${junitVersion}"))
 
     implementation('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
@@ -62,6 +63,7 @@ dependencies {
     implementation('com.monitorjbl:xlsx-streamer:2.1.0')
 
     implementation('commons-io:commons-io:2.6')
+    implementation('org.jetbrains:annotations:20.1.0')
 
     runtimeOnly('org.springframework.boot:spring-boot-devtools')
 
@@ -74,7 +76,9 @@ dependencies {
     testCompile("org.junit.jupiter:junit-jupiter-params")
     testRuntime("org.junit.jupiter:junit-jupiter-engine")
 
-    testCompile("org.testcontainers:mongodb")
+    //TODO: bring back after TC' release to support MongoDB 4.4
+    //testCompile("org.testcontainers:mongodb")
+    testCompile("com.github.testcontainers.testcontainers-java:mongodb:2cd32fd6")
 
     //for debug during the run-time
     implementation('io.projectreactor:reactor-tools:3.3.7.RELEASE')

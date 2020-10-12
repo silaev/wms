@@ -4,7 +4,6 @@ import com.silaev.wms.annotation.version.ApiV1;
 import com.silaev.wms.converter.StringToBrandConverter;
 import com.silaev.wms.dto.FileUploadDto;
 import com.silaev.wms.dto.ProductDto;
-import com.silaev.wms.entity.Product;
 import com.silaev.wms.model.Brand;
 import com.silaev.wms.service.ProductService;
 import com.silaev.wms.service.UploadProductService;
@@ -70,10 +69,10 @@ public class ProductController {
    * Gets products in the Product entity representation
    * for administrative needs.
    *
-   * @return Flux<Product>
+   * @return Flux<ProductDto>
    */
   @GetMapping(value = "/admin/all", produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
-  public ResponseEntity<Flux<Product>> findAll() {
+  public ResponseEntity<Flux<ProductDto>> findAll() {
     log.debug("findAll");
 
     return ResponseEntity.ok(productService.findAll());
@@ -98,13 +97,13 @@ public class ProductController {
    * Creates a new set of products.
    *
    * @param productDto
-   * @return Flux<Product>
+   * @return Flux<ProductDto>
    */
   @PostMapping(
     consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = MediaType.APPLICATION_STREAM_JSON_VALUE
   )
-  public ResponseEntity<Flux<Product>> createProducts(
+  public ResponseEntity<Flux<ProductDto>> createProducts(
     @RequestBody Flux<ProductDto> productDto,
     @AuthenticationPrincipal Principal principal
   ) {
