@@ -34,6 +34,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.utility.DockerImageName;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
@@ -61,7 +62,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class ProductControllerITTest {
   private static final String BASE_URL = ApiV1.BASE_URL;
   private static final MongoDBContainer MONGO_DB_CONTAINER =
-    new MongoDBContainer("mongo:4.4.1");
+    new MongoDBContainer(DockerImageName.parse("mongo:4.4.2"));
   private final ProductToProductDtoConverter productConverter = new ProductToProductDtoConverter();
   @Autowired
   private WebTestClient webClient;

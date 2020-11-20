@@ -36,6 +36,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.utility.DockerImageName;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -68,7 +69,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class PatchProductLoadITTest {
   private static final String BASE_URL = ApiV1.BASE_URL;
   private static final MongoDBContainer MONGO_DB_CONTAINER =
-    new MongoDBContainer("mongo:4.2.8");
+    new MongoDBContainer(DockerImageName.parse("mongo:4.2.11"));
   @Autowired
   private WebTestClient webClient;
   @Autowired
